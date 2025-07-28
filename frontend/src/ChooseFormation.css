@@ -1,0 +1,69 @@
+.choose-formation-page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+h1 {
+    font-size: 80px !important;
+}
+.choose-formation-page h1 {
+  font-family: Jaro;
+  color: #B50000;
+  font-size: 90px !important;
+  margin: 0 0 3rem 0;
+  background: #fff7ee;
+  border-radius: 20px;
+  border: 2px solid #FF0000;
+  padding: 10px 35px;
+}
+
+.formations-row {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+}
+
+.formation-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff7ee;
+  border: 2px solid #B50000;
+  border-radius: 20px;
+  padding: 2rem 3rem;
+  font-size: 2.5rem;
+  color: #B50000;
+  font-family: Jaro;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 4px 16px #ffbdbd55;
+}
+
+.formation-btn img {
+  width: 180px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.formation-btn:hover {
+  background: #ffbdbd;
+  transform: scale(1.05);
+}
+
+.back-btn {
+  margin-top: 2rem;
+  background: #B50000;
+  color: #FFF7EE;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+}

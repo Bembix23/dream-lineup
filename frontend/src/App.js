@@ -4,6 +4,8 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import Account from './Account';
+import ChooseFormation from './ChooseFormation';
+import Field from './Field';
 import imgConnexion from './assets/images/icones/utilisateur-3.png';
 import imgCreerEquipe from './assets/images/icones/football-2.png';
 import imgParametres from './assets/images/icones/reglage.png';
@@ -35,6 +37,8 @@ function App() {
   const [hoveredId, setHoveredId] = useState(null);
   const [authMode, setAuthMode] = useState(null); // null | 'choice' | 'login' | 'register'
   const [showAccount, setShowAccount] = useState(false);
+  const [showFormation, setShowFormation] = useState(false);
+  const [selectedFormation, setSelectedFormation] = useState(null);
   const current = buttonsData.find(b => b.id === hoveredId) || buttonsData[0];
 
   useEffect(() => {
@@ -55,6 +59,18 @@ function App() {
       <main className="content">
         {showAccount ? (
           <Account onBack={() => { setShowAccount(false); setAuthMode(null); }} />
+        ) : showFormation ? (
+          selectedFormation ? (
+            <Field
+              formation={selectedFormation}
+              onBack={() => setSelectedFormation(null)}
+            />
+          ) : (
+            <ChooseFormation
+              onBack={() => setShowFormation(false)}
+              onChoose={name => setSelectedFormation(name)}
+            />
+          )
         ) : authMode === 'choice' ? (
           <div className="button-list">
             <button onClick={() => setAuthMode('login')}>Se connecter</button>
@@ -76,6 +92,7 @@ function App() {
                   onClick={() => {
                     if (button.label === "Se Connecter" && !user) setAuthMode('choice');
                     if (button.label === "Se Connecter" && user) setShowAccount(true);
+                    if (button.label === "Créer une équipe") setShowFormation(true);
                   }}
                 >
                   {user && button.label === "Se Connecter"

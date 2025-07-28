@@ -1,0 +1,61 @@
+.field-container {
+  position: relative;
+  width: 80vw;
+  height: 70vh;
+  background: #1a7e3c;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.field-bg {
+  width: 90vw;
+  height: 90vh;
+  object-fit: contain;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.player-spot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #fff7ee;
+  color: #B50000;
+  font-size: 2.5rem;
+  font-family: inherit;
+  line-height: 1;
+  border: 3px solid #B50000;
+  cursor: pointer;
+  display: flex;
+  padding-top: 5px;
+  padding-left: 8px;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.player-spot:hover {
+  background: #ffbdbd;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.back-btn {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  background: #B50000;
+  color: #FFF7EE;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1.2rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 3;
+}
