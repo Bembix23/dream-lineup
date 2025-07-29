@@ -1,4 +1,6 @@
-import terrainImg from './assets/images/fonds/terrain-background-image.png';
+import { useState } from "react";
+import terrainGreen from './assets/images/fonds/dreamlineup-field-green.png';
+import terrainBlack from './assets/images/fonds/dreamlineup-field-black.png';
 import './Field.css';
 
 const FORMATIONS = {
@@ -7,7 +9,7 @@ const FORMATIONS = {
     [50, 90], // Gardien
     [15, 75], [35, 75], [65, 75], [85, 75], // Défenseurs
     [15, 55], [35, 55], [65, 55], [85, 55], // Milieux
-    [35, 30], [65, 30], // Attaquants
+    [35, 35], [65, 35], // Attaquants
   ],
   "4-3-3": [
     [50, 90],
@@ -36,25 +38,59 @@ const FORMATIONS = {
   ],
 };
 
+const COLORS = [
+  { name: "Vert", img: terrainGreen, color: "#1a7e3c" },
+  { name: "Noir", img: terrainBlack, color: "#222" },
+  // Ajoute d'autres couleurs ici si besoin
+];
+
 export default function Field({ formation, onBack }) {
   const positions = FORMATIONS[formation];
+  const [terrain, setTerrain] = useState(COLORS[0]);
+  const [showPopup, setShowPopup] = useState(false);
 
   return (
-    <div className="field-container">
-      <img src={terrainImg} alt="terrain" className="field-bg" />
-      {positions.map(([x, y], idx) => (
+    <div className="field-page">
+      <div className="side-panel">
         <button
-          key={idx}
-          className="player-spot"
-          style={{
-            left: `${x}%`,
-            top: `${y}%`,
-          }}
-        >
-          +
-        </button>
-      ))}
-      <button className="back-btn" onClick={onBack}>Retour</button>
+          className="color-circle-btn"
+          style={{ background: terrain.color }}
+          onClick={() => setShowPopup(true)}
+          aria-label="Changer la couleur du terrain"
+        />
+        {showPopup && (
+          <div className="color-popup" onMouseLeave={() => setShowPopup(false)}>
+            {COLORS.map(c => (
+              <button
+                key={c.name}
+                className="color-choice"
+                style={{ background: c.color }}
+                onClick={() => {
+                  setTerrain(c);
+                  setShowPopup(false);
+                }}
+                aria-label={c.name}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="field-container">
+        <img src={terrain.img} alt="terrain" className="field-bg" />
+        {positions.map(([x, y], idx) => (
+          <button
+            key={idx}
+            className="player-spot"
+            style={{
+              left: `${x}%`,
+              top: `${y}%`,
+            }}
+          >
+            +
+          </button>
+        ))}
+        <button className="back-btn" onClick={onBack}>Retour</button>
+      </div>
     </div>
   );
 }

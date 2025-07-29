@@ -1,17 +1,18 @@
 .field-container {
   position: relative;
-  width: 80vw;
-  height: 70vh;
-  background: #1a7e3c;
+  width: 493px;
+  height: 740px;
+  background: #FFF7EE;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto;
 }
 
 .field-bg {
-  width: 90vw;
-  height: 90vh;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   position: absolute;
   left: 50%;
@@ -47,7 +48,7 @@
 }
 
 .back-btn {
-  position: absolute;
+  position: fixed;
   top: 30px;
   left: 30px;
   background: #B50000;
@@ -57,5 +58,106 @@
   padding: 0.7rem 1.2rem;
   font-size: 1.2rem;
   cursor: pointer;
-  z-index: 3;
+  z-index: 100;
+}
+
+.field-page {
+  display: flex;
+  flex-direction: row;
+  height: 70vh;
+  width: 100vw;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.side-panel {
+  position: absolute;
+  left: 15%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 740px;
+  min-width: 50px;
+  background: #fff7ee;
+  border: 3px solid #B50000;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* centre horizontalement les boutons */
+  justify-content: flex-start;
+  gap: 2rem;
+  z-index: 10;
+  padding: 1rem 10px;
+  box-shadow: 0 4px 24px #b5000022;
+}
+
+.terrain-color-label {
+  font-size: 1.3rem;
+  color: #B50000;
+  margin-bottom: 1rem;
+  background: #fff7ee;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-family: Jaro;
+}
+
+.color-btn {
+  background: #222;
+  color: #FFF7EE;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1.2rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background 0.2s;
+}
+.color-btn:disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+
+.color-circle-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #B50000;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 2px 8px #b5000022;
+  outline: none;
+}
+
+.color-circle-btn:focus {
+  box-shadow: 0 0 0 3px #ffbdbd;
+}
+
+.color-popup {
+  display: flex;
+  flex-direction: row;
+  gap: 0.7rem;
+  background: #fff7ee;
+  border-radius: 12px;
+  padding: 1rem 0.7rem;
+  box-shadow: 0 4px 24px #b5000033;
+  position: absolute;
+  left: 0;
+  top: 60px;
+  z-index: 200;
+}
+
+.color-choice {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #B50000;
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+
+.color-choice:focus,
+.color-choice:hover {
+  box-shadow: 0 0 0 3px #ffbdbd;
 }
