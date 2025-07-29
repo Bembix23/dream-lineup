@@ -27,14 +27,14 @@ const FORMATIONS = {
     [50, 90], // Gardien
     [15, 75], [35, 75], [65, 75], [85, 75], // Défenseurs
     [35, 60], [65, 60], // Milieux défensifs
-    [20, 45], [50, 40], [80, 45], // Milieux offensifs
-    [50, 25], // Attaquant
+    [20, 40], [50, 35], [80, 40], // Milieux offensifs
+    [50, 20], // Attaquant
   ],
   "3-4-3": [
     [50, 90], // Gardien
     [20, 75], [50, 75], [80, 75], // Défenseurs
     [15, 55], [40, 55], [60, 55], [85, 55], // Milieux
-    [20, 30], [50, 20], [80, 30], // Attaquants
+    [20, 35], [50, 20], [80, 35], // Attaquants
   ],
 };
 
@@ -44,14 +44,26 @@ const COLORS = [
   // Ajoute d'autres couleurs ici si besoin
 ];
 
+const FORMATION_LIST = [
+  { name: "4-4-2" },
+  { name: "4-2-3-1" },
+  { name: "3-4-3" },
+  //{ name: "4-3-3" },
+  //{ name: "3-5-2" },
+];
+
 export default function Field({ formation, onBack }) {
-  const positions = FORMATIONS[formation];
   const [terrain, setTerrain] = useState(COLORS[0]);
   const [showPopup, setShowPopup] = useState(false);
+  const [showFormationPopup, setShowFormationPopup] = useState(false);
+  const [currentFormation, setCurrentFormation] = useState(formation);
+
+  const positions = FORMATIONS[currentFormation];
 
   return (
     <div className="field-page">
       <div className="side-panel">
+        {/* Bouton couleur */}
         <button
           className="color-circle-btn"
           style={{ background: terrain.color }}
@@ -71,6 +83,32 @@ export default function Field({ formation, onBack }) {
                 }}
                 aria-label={c.name}
               />
+            ))}
+          </div>
+        )}
+
+        {/* Bouton formation */}
+        <button
+          className="formation-circle-btn"
+          onClick={() => setShowFormationPopup(true)}
+          aria-label="Changer la formation"
+        >
+          <span className="formation-label">{currentFormation}</span>
+        </button>
+        {showFormationPopup && (
+          <div className="formation-popup" onMouseLeave={() => setShowFormationPopup(false)}>
+            {FORMATION_LIST.map(f => (
+              <button
+                key={f.name}
+                className={`formation-choice${currentFormation === f.name ? " selected" : ""}`}
+                onClick={() => {
+                  setCurrentFormation(f.name);
+                  setShowFormationPopup(false);
+                }}
+                aria-label={f.name}
+              >
+                {f.name}
+              </button>
             ))}
           </div>
         )}

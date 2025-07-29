@@ -85,7 +85,6 @@
   flex-direction: column;
   align-items: center;      /* centre horizontalement les boutons */
   justify-content: flex-start;
-  gap: 2rem;
   z-index: 10;
   padding: 1rem 10px;
   box-shadow: 0 4px 24px #b5000022;
@@ -160,4 +159,63 @@
 .color-choice:focus,
 .color-choice:hover {
   box-shadow: 0 0 0 3px #ffbdbd;
+}
+
+.formation-circle-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #B50000;
+  background: #fff7ee;
+  color: #B50000;
+  font-family: Jaro;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 2px 8px #b5000022;
+  outline: none;
+  position: relative;
+}
+
+.formation-label {
+  font-size: 12px;
+  font-family: Jaro;
+}
+
+.formation-popup {
+  display: flex;
+  flex-direction: row;
+  gap: 0.7rem;
+  background: #fff7ee;
+  border-radius: 12px;
+  padding: 1rem 0.7rem;
+  box-shadow: 0 4px 24px #b5000033;
+  position: absolute;
+  left: 0;
+  top: 100px;
+  z-index: 200;
+  border: #B50000 2px solid;
+}
+
+.formation-choice {
+  border: 2px solid #B50000;
+  background: #fff7ee;
+  color: #B50000;
+  border-radius: 12px;
+  padding: 0.5rem 1.2rem;
+  font-family: Jaro;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  width: 100px;
+}
+
+.formation-choice.selected,
+.formation-choice:hover {
+  background: #B50000;
+  color: #FFF7EE;
 }
