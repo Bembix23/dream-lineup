@@ -1,6 +1,7 @@
 import { useState } from "react";
 import terrainGreen from './assets/images/fonds/dreamlineup-field-green.png';
 import terrainBlack from './assets/images/fonds/dreamlineup-field-black.png';
+import paletteIcon from './assets/images/icones/palette.png';
 import './Field.css';
 
 const FORMATIONS = {
@@ -69,7 +70,9 @@ export default function Field({ formation, onBack }) {
           style={{ background: terrain.color }}
           onClick={() => setShowPopup(true)}
           aria-label="Changer la couleur du terrain"
-        />
+        >
+          <img src={paletteIcon} alt="Palette" className="palette-icon" />
+        </button>
         {showPopup && (
           <div className="color-popup" onMouseLeave={() => setShowPopup(false)}>
             {COLORS.map(c => (
