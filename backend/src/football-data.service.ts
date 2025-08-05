@@ -1,5 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import * as admin from 'firebase-admin';
+import * as serviceAccount from './firebase-service-account.json';
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+});
+
+const db = admin.firestore();
 
 @Injectable()
 export class FootballDataService {
@@ -7,12 +15,17 @@ export class FootballDataService {
   private readonly apiKey = process.env.FOOTBALL_DATA_API_KEY;
 
   async getTeams(competitionId: string) {
+    const cacheDoc = await db.collection('teams').doc(competitionId).get();
+    if (cacheDoc.exists) {
+      return cacheDoc.data();
+    }
     const response = await axios.get(
       `${this.apiUrl}/competitions/${competitionId}/teams`,
       {
         headers: { 'X-Auth-Token': this.apiKey },
       },
     );
+    await db.collection('teams').doc(competitionId).set(response.data);
     return response.data;
   }
 
