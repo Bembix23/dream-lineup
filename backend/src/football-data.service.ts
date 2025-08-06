@@ -11,8 +11,24 @@ const db = admin.firestore();
 
 @Injectable()
 export class FootballDataService {
-  private readonly apiUrl = 'https://api.football-data.org/v4';
-  private readonly apiKey = process.env.FOOTBALL_DATA_API_KEY;
+  private apiUrl = 'https://api.football-data.org/v4';
+  private apiKey = process.env.FOOTBALL_DATA_API_KEY;
+
+  async getLeagues() {
+    try {
+      const response = await axios.get(`${this.apiUrl}/competitions`, {
+        headers: { 'X-Auth-Token': this.apiKey },
+      });
+      return response.data.competitions.map((comp: any) => ({
+        id: comp.id,
+        name: comp.name,
+        area: comp.area.name,
+      }));
+    } catch (error) {
+      console.error('Erreur getLeagues:', error);
+      throw error;
+    }
+  }
 
   async getTeams(competitionId: string) {
     const cacheDoc = await db.collection('teams').doc(competitionId).get();

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import terrainGreen from './assets/images/fonds/dreamlineup-field-green.png';
 import terrainBlack from './assets/images/fonds/dreamlineup-field-black.png';
 import paletteIcon from './assets/images/icones/palette.png';
@@ -58,8 +58,66 @@ export default function Field({ formation, onBack }) {
   const [showPopup, setShowPopup] = useState(false);
   const [showFormationPopup, setShowFormationPopup] = useState(false);
   const [currentFormation, setCurrentFormation] = useState(formation);
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [step, setStep] = useState(1); // 1: ligue, 2: club, 3: joueur
+  const [leagues, setLeagues] = useState([]);
+  const [clubs, setClubs] = useState([]);
+  const [players, setPlayers] = useState([]);
+  const [selectedPosition, setSelectedPosition] = useState(null);
 
   const positions = FORMATIONS[currentFormation];
+
+  // Ouvre la pop-up et mémorise le poste du bouton "+" cliqué
+  const handleAddPlayerClick = (idx) => {
+    const positionLabel = getPositionLabel(currentFormation, idx);
+    setSelectedPosition(positionLabel);
+    setPopupOpen(true);
+    setStep(1);
+    fetch('http://localhost:4000/football/leagues')
+      .then(res => res.json())
+      .then(data => setLeagues(data.leagues || data));
+  };
+
+  // Sélection de la ligue
+  const handleLeagueSelect = (leagueId) => {
+    setStep(2);
+    fetch(`http://localhost:4000/football/teams?competitionId=${leagueId}`)
+      .then(res => res.json())
+      .then(data => setClubs(data.teams)); // adapte selon la structure renvoyée
+  };
+
+  // Sélection du club
+  const handleClubSelect = (clubId) => {
+    console.log('clubId:', clubId, 'selectedPosition:', selectedPosition); // debug
+    setStep(3);
+    fetch(`http://localhost:4000/football/players-by-position?teamId=${clubId}&position=${selectedPosition}`)
+      .then(res => res.json())
+      .then(data => setPlayers(data));
+  };
+
+  // Sélection du joueur (à compléter selon ton besoin)
+  const handlePlayerSelect = (playerId) => {
+    // Ajoute le joueur au terrain, ferme la pop-up, etc.
+    setPopupOpen(false);
+    // ...ton code ici...
+  };
+
+  const handlePopupBack = () => {
+    if (step === 2) setStep(1);
+    else if (step === 3) setStep(2);
+  };
+
+  function getPositionLabel(formation, idx) {
+    // Exemple pour 4-4-2
+    if (formation === "4-4-2") {
+      if (idx === 0) return "Goalkeeper";
+      if (idx >= 1 && idx <= 4) return "Defender";
+      if (idx >= 5 && idx <= 8) return "Midfielder";
+      return "Attacker";
+    }
+    // Ajoute les autres formations ici...
+    return "Attacker";
+  }
 
   return (
     <div className="field-page">
@@ -126,12 +184,67 @@ export default function Field({ formation, onBack }) {
               left: `${x}%`,
               top: `${y}%`,
             }}
+            onClick={() => handleAddPlayerClick(idx)}
           >
             +
           </button>
         ))}
         <button className="back-btn" onClick={onBack}>Retour</button>
       </div>
+
+      {/* Pop-up */}
+      {popupOpen && (
+        <div className="popup">
+          {step === 1 && (
+            <div>
+              <h3>Choisis une ligue</h3>
+              <ul>
+                {leagues.map(league => (
+                  <li key={league.id}>
+                    <button onClick={() => handleLeagueSelect(league.id)}>
+                      {league.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {step === 2 && (
+            <div>
+              <h3>Choisis un club</h3>
+              <ul>
+                {clubs.map(club => (
+                  <li key={club.id}>
+                    <button onClick={() => handleClubSelect(club.id)}>
+                      {club.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {step === 3 && (
+            <div>
+              <h3>Choisis un joueur ({selectedPosition})</h3>
+              <ul>
+                {players.map(player => (
+                  <li key={player.id}>
+                    <button onClick={() => handlePlayerSelect(player.id)}>
+                      {player.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {step > 1 && (
+            <button className="popup-back-btn" onClick={handlePopupBack} aria-label="Retour">
+              {/* Flèche unicode ou SVG */}
+              <span style={{fontWeight: 'bold', fontSize: '2rem'}}>&larr;</span>
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

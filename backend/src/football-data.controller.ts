@@ -17,4 +17,9 @@ export class FootballDataController {
   ) {
     return this.footballDataService.getPlayersByPosition(teamId, position);
   }
+
+  @Get('leagues')
+  async getLeagues() {
+    return this.footballDataService.getLeagues();
+  }
 }
