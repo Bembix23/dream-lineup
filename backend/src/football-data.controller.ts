@@ -10,16 +10,17 @@ export class FootballDataController {
     return this.footballDataService.getTeams(competitionId);
   }
 
-  @Get('players-by-position')
-  async getPlayersByPosition(
-    @Query('teamId') teamId: string,
-    @Query('position') position: string
-  ) {
-    return this.footballDataService.getPlayersByPosition(teamId, position);
-  }
-
   @Get('leagues')
   async getLeagues() {
     return this.footballDataService.getLeagues();
+  }
+
+  @Get('players-by-category')
+  async getPlayersByCategory(
+    @Query('teamId') teamId: string,
+    @Query('positions') positions: string,
+  ) {
+    const positionsArray = positions.split(','); // Convertir la liste en tableau
+    return this.footballDataService.getPlayersByPositions(teamId, positionsArray);
   }
 }

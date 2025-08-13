@@ -45,13 +45,14 @@ export class FootballDataService {
     return response.data;
   }
 
-  async getPlayersByPosition(teamId: string, position: string) {
+  async getPlayersByPositions(teamId: string, positions: string[]) {
     const response = await axios.get(`${this.apiUrl}/teams/${teamId}`, {
       headers: { 'X-Auth-Token': this.apiKey },
     });
-    // Filtrer les joueurs par poste
-    return response.data.squad.filter(
-      (player: any) => player.position === position,
+
+    // Filtrer les joueurs par les postes spécifiés
+    return response.data.squad.filter((player: any) =>
+      positions.includes(player.position),
     );
   }
 }

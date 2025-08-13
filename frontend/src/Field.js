@@ -88,11 +88,18 @@ export default function Field({ formation, onBack }) {
 
   // Sélection du club
   const handleClubSelect = (clubId) => {
-    console.log('clubId:', clubId, 'selectedPosition:', selectedPosition); // debug
+    const positions = mapCategoryToPositions(selectedPosition); // Convertit la catégorie en postes spécifiques
+    console.log('clubId:', clubId, 'selectedPosition:', selectedPosition, 'positions:', positions); // debug
     setStep(3);
-    fetch(`http://localhost:4000/football/players-by-position?teamId=${clubId}&position=${selectedPosition}`)
+    fetch(`http://localhost:4000/football/players-by-category?teamId=${clubId}&positions=${positions.join(",")}`)
       .then(res => res.json())
-      .then(data => setPlayers(data));
+      .then(data => {
+        console.log('Données reçues des joueurs:', data); // Inspecte la réponse
+        setPlayers(data);
+      })
+      .catch(err => {
+        console.error('Erreur fetch joueurs:', err);
+      });
   };
 
   // Sélection du joueur (à compléter selon ton besoin)
@@ -115,8 +122,47 @@ export default function Field({ formation, onBack }) {
       if (idx >= 5 && idx <= 8) return "Midfielder";
       return "Attacker";
     }
-    // Ajoute les autres formations ici...
+    if (formation === "4-2-3-1") {
+    if (idx === 0) return "Goalkeeper";
+    if (idx >= 1 && idx <= 4) return "Defender";
+    if (idx >= 5 && idx <= 6) return "Midfielder"; // Milieux défensifs
     return "Attacker";
+  }
+  if (formation === "3-4-3") {
+    if (idx === 0) return "Goalkeeper";
+    if (idx >= 1 && idx <= 3) return "Defender";
+    if (idx >= 4 && idx <= 7) return "Midfielder";
+    return "Attacker";
+  }
+  if (formation === "4-3-3") {
+    if (idx === 0) return "Goalkeeper";
+    if (idx >= 1 && idx <= 4) return "Defender";
+    if (idx >= 5 && idx <= 7) return "Midfielder";
+    return "Attacker";
+  }
+  if (formation === "3-5-2") {
+    if (idx === 0) return "Goalkeeper";
+    if (idx >= 1 && idx <= 3) return "Defender";
+    if (idx >= 4 && idx <= 8) return "Midfielder";
+    return "Attacker";
+  }
+    return "Attacker";
+  }
+
+  function mapCategoryToPositions(category) {
+    if (category === "Defender") {
+      return ["Right-Back", "Centre-Back", "Left-Back"];
+    }
+    if (category === "Midfielder") {
+      return ["Central Midfield", "Defensive Midfield", "Attacking Midfield", "Midfield"];
+    }
+    if (category === "Attacker") {
+      return ["Left Winger", "Right Winger", "Centre-Forward", "Offence"];
+    }
+    if (category === "Goalkeeper") {
+      return ["Goalkeeper"];
+    }
+    return [];
   }
 
   return (
@@ -195,6 +241,18 @@ export default function Field({ formation, onBack }) {
       {/* Pop-up */}
       {popupOpen && (
         <div className="popup">
+          {selectedPosition && (
+            <div className="selected-position-info">
+              <strong>Poste choisi :</strong> {selectedPosition}
+            </div>
+          )}
+          <button
+            className="popup-close-btn"
+            onClick={() => setPopupOpen(false)}
+            aria-label="Fermer"
+          >
+            <span style={{fontWeight: 'bold', fontSize: '2rem'}}>&times;</span>
+          </button>
           {step === 1 && (
             <div>
               <h3>Choisis une ligue</h3>
@@ -214,7 +272,14 @@ export default function Field({ formation, onBack }) {
               <h3>Choisis un club</h3>
               <ul>
                 {clubs.map(club => (
-                  <li key={club.id}>
+                  <li key={club.id} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    {club.crest && (
+                      <img
+                        src={club.crest}
+                        alt={club.name}
+                        style={{width: 24, height: 24, objectFit: 'contain'}}
+                      />
+                    )}
                     <button onClick={() => handleClubSelect(club.id)}>
                       {club.name}
                     </button>
@@ -225,7 +290,7 @@ export default function Field({ formation, onBack }) {
           )}
           {step === 3 && (
             <div>
-              <h3>Choisis un joueur ({selectedPosition})</h3>
+              <h3>Choisis un joueur</h3>
               <ul>
                 {players.map(player => (
                   <li key={player.id}>
@@ -237,9 +302,9 @@ export default function Field({ formation, onBack }) {
               </ul>
             </div>
           )}
+          {/* Bouton retour */}
           {step > 1 && (
             <button className="popup-back-btn" onClick={handlePopupBack} aria-label="Retour">
-              {/* Flèche unicode ou SVG */}
               <span style={{fontWeight: 'bold', fontSize: '2rem'}}>&larr;</span>
             </button>
           )}
