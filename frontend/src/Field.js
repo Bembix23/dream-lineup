@@ -3,6 +3,7 @@ import terrainGreen from "./assets/images/fonds/dreamlineup-field-green.png";
 import terrainBlack from "./assets/images/fonds/dreamlineup-field-black.png";
 import paletteIcon from "./assets/images/icones/palette.png";
 import "./Field.css";
+import { auth } from "./firebase";
 
 const FORMATIONS = {
   "4-4-2": [
@@ -64,8 +65,8 @@ const FORMATIONS = {
     [50, 75],
     [80, 75], // Défenseurs
     [15, 52],
-    [40, 58],
-    [60, 58],
+    [35, 58],
+    [65, 58],
     [85, 52], // Milieux
     [20, 35],
     [50, 20],
@@ -87,7 +88,7 @@ const FORMATION_LIST = [
   //{ name: "3-5-2" },
 ];
 
-export default function Field({ formation, onBack }) {
+export default function Field({ formation, onBack, onRequestLogin, onRequestRegister, user }) {
   const [terrain, setTerrain] = useState(COLORS[0]);
   const [showPopup, setShowPopup] = useState(false);
   const [showFormationPopup, setShowFormationPopup] = useState(false);
@@ -103,6 +104,7 @@ export default function Field({ formation, onBack }) {
   const [team, setTeam] = useState(Array(positions.length).fill(null));
   const [showSavePopup, setShowSavePopup] = useState(false);
   const [teamName, setTeamName] = useState("");
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
 
   useEffect(() => {
     console.log("Équipe actuelle :", team);
@@ -325,7 +327,13 @@ export default function Field({ formation, onBack }) {
         </button>
         <button
           className="popup-save-btn"
-          onClick={() => setShowSavePopup(true)}
+          onClick={() => {
+            if (!user) {
+              setShowAuthPopup(true); // Affiche la popup d’auth
+            } else {
+              setShowSavePopup(true); // Affiche la popup de sauvegarde
+            }
+          }}
           aria-label="Sauvegarder l'équipe"
         >
           Sauvegarder l’équipe
@@ -433,35 +441,77 @@ export default function Field({ formation, onBack }) {
               value={teamName}
               onChange={(e) => setTeamName(e.target.value)}
               className="team-name-input"
+              required
             />
             <button
               className="save-team-btn"
-              onClick={() => {
-                // Récupère les équipes existantes
-                const savedTeams = JSON.parse(
-                  localStorage.getItem("savedTeams") || "[]"
-                );
-                // Définit le nom par défaut si vide
-                const name =
-                  teamName.trim() || `Equipe ${savedTeams.length + 1}`;
+              onClick={async () => {
                 // Sauvegarde
-                savedTeams.push({
-                  name,
-                  formation: currentFormation,
-                  team,
-                });
-                localStorage.setItem("savedTeams", JSON.stringify(savedTeams));
-                setShowSavePopup(false);
-                setTeamName("");
-                alert("Équipe sauvegardée !");
+                const token = await auth.currentUser.getIdToken();
+                fetch('http://localhost:4000/football/save-team', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // ou user.accessToken
+                  },
+                  body: JSON.stringify({
+                    teamName,
+                    formation: currentFormation,
+                    team,
+                  }),
+                })
+                  .then(res => res.json())
+                  .then(data => {
+                    console.log('Réponse backend:', data);
+                    setShowSavePopup(false);
+                    setTeamName("");
+                    alert("Équipe sauvegardée !");
+                  });
               }}
-              disabled={team.includes(null)}
+              disabled={team.includes(null) || !teamName.trim()}
             >
               Sauvegarder
             </button>
             <button
               className="save-popup-close-btn"
               onClick={() => setShowSavePopup(false)}
+              aria-label="Fermer"
+            >
+              <span style={{ fontWeight: "bold", fontSize: "2rem" }}>
+                &times;
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Pop-up auth */}
+      {showAuthPopup && (
+        <div className="save-popup-overlay">
+          <div className="save-popup">
+            <h3>Connexion requise</h3>
+            <p>Vous devez être connecté pour sauvegarder une équipe.</p>
+            <button
+              className="save-team-btn"
+              onClick={() => {
+                setShowAuthPopup(false);
+                onRequestLogin(); // fonction à définir pour ouvrir LoginForm
+              }}
+            >
+              Se connecter
+            </button>
+            <button
+              className="save-team-btn"
+              onClick={() => {
+                setShowAuthPopup(false);
+                onRequestRegister(); // fonction à définir pour ouvrir RegisterForm
+              }}
+            >
+              Créer un compte
+            </button>
+            <button
+              className="save-popup-close-btn"
+              onClick={() => setShowAuthPopup(false)}
               aria-label="Fermer"
             >
               <span style={{ fontWeight: "bold", fontSize: "2rem" }}>

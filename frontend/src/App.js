@@ -57,13 +57,30 @@ function App() {
         )}
       </header>
       <main className="content">
-        {showAccount ? (
+        {authMode === 'login' ? (
+          <LoginForm
+            onBack={() => setAuthMode('choice')}
+            onSuccess={() => {
+              setAuthMode(null);
+            }}
+          />
+        ) : authMode === 'register' ? (
+          <RegisterForm
+            onBack={() => setAuthMode('choice')}
+            onSuccess={() => {
+              setAuthMode(null);
+            }}
+          />
+        ) : showAccount ? (
           <Account onBack={() => { setShowAccount(false); setAuthMode(null); }} />
         ) : showFormation ? (
           selectedFormation ? (
             <Field
               formation={selectedFormation}
               onBack={() => setSelectedFormation(null)}
+              user={user}
+              onRequestLogin={() => setAuthMode('login')}
+              onRequestRegister={() => setAuthMode('register')}
             />
           ) : (
             <ChooseFormation
@@ -77,10 +94,6 @@ function App() {
             <button onClick={() => setAuthMode('register')}>Créer un compte</button>
             <button onClick={() => setAuthMode(null)}>Retour</button>
           </div>
-        ) : authMode === 'login' ? (
-          <LoginForm onBack={() => setAuthMode('choice')} onSuccess={() => setAuthMode(null)} />
-        ) : authMode === 'register' ? (
-          <RegisterForm onBack={() => setAuthMode('choice')} onSuccess={() => setAuthMode(null)} />
         ) : (
           <>
             <nav className="button-list">

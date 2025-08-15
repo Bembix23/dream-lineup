@@ -3,9 +3,11 @@ import axios from 'axios';
 import * as admin from 'firebase-admin';
 import * as serviceAccount from './firebase-service-account.json';
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-});
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+  });
+}
 
 const db = admin.firestore();
 
@@ -59,5 +61,21 @@ export class FootballDataService {
       await db.collection('players').doc(teamId).set({ squad });
     }
     return squad.filter((player: any) => positions.includes(player.position));
+  }
+
+  async saveTeam(userId: string, name: string, formation: string, team: any[]) {
+    console.log('Sauvegarde équipe pour:', userId, name, formation, team);
+    await db.collection('users').doc(userId).collection('teams').add({
+      name,
+      formation,
+      team,
+      createdAt: new Date(),
+    });
+    return { success: true };
+  }
+
+  async getTeamsSaved(userId: string) {
+    const snapshot = await db.collection('users').doc(userId).collection('teams').get();
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   }
 }
