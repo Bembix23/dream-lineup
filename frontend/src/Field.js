@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import terrainGreen from './assets/images/fonds/dreamlineup-field-green.png';
 import terrainBlack from './assets/images/fonds/dreamlineup-field-black.png';
 import paletteIcon from './assets/images/icones/palette.png';
@@ -8,13 +8,13 @@ const FORMATIONS = {
   "4-4-2": [
     // [x, y] en pourcentage du conteneur (0-100)
     [50, 90], // Gardien
-    [15, 75], [35, 75], [65, 75], [85, 75], // Défenseurs
-    [15, 55], [35, 55], [65, 55], [85, 55], // Milieux
+    [15, 72], [35, 78], [65, 78], [85, 72], // Défenseurs
+    [15, 52], [35, 58], [65, 58], [85, 52], // Milieux
     [35, 35], [65, 35], // Attaquants
   ],
   "4-3-3": [
     [50, 90],
-    [15, 75], [35, 75], [65, 75], [85, 75],
+    [15, 72], [35, 78], [65, 78], [85, 72],
     [25, 55], [50, 50], [75, 55],
     [20, 30], [50, 20], [80, 30],
   ],
@@ -26,7 +26,7 @@ const FORMATIONS = {
   ],
   "4-2-3-1": [
     [50, 90], // Gardien
-    [15, 75], [35, 75], [65, 75], [85, 75], // Défenseurs
+    [15, 72], [35, 78], [65, 78], [85, 72], // Défenseurs
     [35, 60], [65, 60], // Milieux défensifs
     [20, 40], [50, 35], [80, 40], // Milieux offensifs
     [50, 20], // Attaquant
@@ -34,7 +34,7 @@ const FORMATIONS = {
   "3-4-3": [
     [50, 90], // Gardien
     [20, 75], [50, 75], [80, 75], // Défenseurs
-    [15, 55], [40, 55], [60, 55], [85, 55], // Milieux
+    [15, 52], [40, 58], [60, 58], [85, 52], // Milieux
     [20, 35], [50, 20], [80, 35], // Attaquants
   ],
 };
@@ -64,13 +64,19 @@ export default function Field({ formation, onBack }) {
   const [clubs, setClubs] = useState([]);
   const [players, setPlayers] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState(null);
-
+  const [selectedIdx, setSelectedIdx] = useState(null);
   const positions = FORMATIONS[currentFormation];
+  const [team, setTeam] = useState(Array(positions.length).fill(null));
+
+  useEffect(() => {
+    console.log("Équipe actuelle :", team);
+  }, [team]);
 
   // Ouvre la pop-up et mémorise le poste du bouton "+" cliqué
   const handleAddPlayerClick = (idx) => {
     const positionLabel = getPositionLabel(currentFormation, idx);
     setSelectedPosition(positionLabel);
+    setSelectedIdx(idx); // <-- mémorise l'index
     setPopupOpen(true);
     setStep(1);
     fetch('http://localhost:4000/football/leagues')
@@ -104,9 +110,14 @@ export default function Field({ formation, onBack }) {
 
   // Sélection du joueur (à compléter selon ton besoin)
   const handlePlayerSelect = (playerId) => {
-    // Ajoute le joueur au terrain, ferme la pop-up, etc.
+    const selectedPlayer = players.find(p => p.id === playerId);
+    if (selectedPlayer && selectedIdx !== null) {
+      const newTeam = [...team];
+      newTeam[selectedIdx] = selectedPlayer;
+      setTeam(newTeam);
+    }
     setPopupOpen(false);
-    // ...ton code ici...
+    setSelectedIdx(null); // reset après sélection
   };
 
   const handlePopupBack = () => {
@@ -125,7 +136,7 @@ export default function Field({ formation, onBack }) {
     if (formation === "4-2-3-1") {
     if (idx === 0) return "Goalkeeper";
     if (idx >= 1 && idx <= 4) return "Defender";
-    if (idx >= 5 && idx <= 6) return "Midfielder"; // Milieux défensifs
+    if (idx >= 5 && idx <= 6) return "Midfielder";
     return "Attacker";
   }
   if (formation === "3-4-3") {
@@ -223,17 +234,34 @@ export default function Field({ formation, onBack }) {
       <div className="field-container">
         <img src={terrain.img} alt="terrain" className="field-bg" />
         {positions.map(([x, y], idx) => (
-          <button
-            key={idx}
-            className="player-spot"
-            style={{
-              left: `${x}%`,
-              top: `${y}%`,
-            }}
-            onClick={() => handleAddPlayerClick(idx)}
-          >
-            +
-          </button>
+          team[idx] ? (
+            <div
+              key={idx}
+              className="player-rect"
+              style={{
+                position: "absolute",
+                left: `${x}%`,
+                top: `${y}%`,
+                transform: "translate(-50%, -50%)",
+                zIndex: 2,
+              }}
+              onClick={() => handleAddPlayerClick(idx)}
+            >
+              {team[idx].name}
+            </div>
+          ) : (
+            <button
+              key={idx}
+              className="player-spot"
+              style={{
+                left: `${x}%`,
+                top: `${y}%`,
+              }}
+              onClick={() => handleAddPlayerClick(idx)}
+            >
+              +
+            </button>
+          )
         ))}
         <button className="back-btn" onClick={onBack}>Retour</button>
       </div>

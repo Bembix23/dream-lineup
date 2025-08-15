@@ -291,3 +291,29 @@
   color: #B50000;
   font-size: 1.1rem;
 }
+
+.player-rect {
+  min-width: 80px;
+  max-width: 120px;
+  height: 38px;
+  background: #fff7ee;
+  border-radius: 16px;
+  border: 2px solid #1a7e3c;
+  color: #B50000;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 0 12px;
+  box-shadow: 0 2px 8px #b5000022;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+  transition: background 0.2s, transform 0.2s;
+}
+.player-rect:hover {
+  background: #ffbdbd;
+  transform: scale(1.05);
+}
