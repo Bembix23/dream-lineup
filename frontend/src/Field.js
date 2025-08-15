@@ -1,41 +1,75 @@
 import React, { useState, useEffect } from "react";
-import terrainGreen from './assets/images/fonds/dreamlineup-field-green.png';
-import terrainBlack from './assets/images/fonds/dreamlineup-field-black.png';
-import paletteIcon from './assets/images/icones/palette.png';
-import './Field.css';
+import terrainGreen from "./assets/images/fonds/dreamlineup-field-green.png";
+import terrainBlack from "./assets/images/fonds/dreamlineup-field-black.png";
+import paletteIcon from "./assets/images/icones/palette.png";
+import "./Field.css";
 
 const FORMATIONS = {
   "4-4-2": [
     // [x, y] en pourcentage du conteneur (0-100)
     [50, 90], // Gardien
-    [15, 72], [35, 78], [65, 78], [85, 72], // Défenseurs
-    [15, 52], [35, 58], [65, 58], [85, 52], // Milieux
-    [35, 35], [65, 35], // Attaquants
+    [15, 72],
+    [35, 78],
+    [65, 78],
+    [85, 72], // Défenseurs
+    [15, 52],
+    [35, 58],
+    [65, 58],
+    [85, 52], // Milieux
+    [35, 35],
+    [65, 35], // Attaquants
   ],
   "4-3-3": [
     [50, 90],
-    [15, 72], [35, 78], [65, 78], [85, 72],
-    [25, 55], [50, 50], [75, 55],
-    [20, 30], [50, 20], [80, 30],
+    [15, 72],
+    [35, 78],
+    [65, 78],
+    [85, 72],
+    [25, 55],
+    [50, 50],
+    [75, 55],
+    [20, 30],
+    [50, 20],
+    [80, 30],
   ],
   "3-5-2": [
     [50, 90],
-    [25, 75], [50, 75], [75, 75],
-    [15, 55], [35, 55], [50, 50], [65, 55], [85, 55],
-    [40, 30], [60, 30],
+    [25, 75],
+    [50, 75],
+    [75, 75],
+    [15, 55],
+    [35, 55],
+    [50, 50],
+    [65, 55],
+    [85, 55],
+    [40, 30],
+    [60, 30],
   ],
   "4-2-3-1": [
     [50, 90], // Gardien
-    [15, 72], [35, 78], [65, 78], [85, 72], // Défenseurs
-    [35, 60], [65, 60], // Milieux défensifs
-    [20, 40], [50, 35], [80, 40], // Milieux offensifs
+    [15, 72],
+    [35, 78],
+    [65, 78],
+    [85, 72], // Défenseurs
+    [35, 60],
+    [65, 60], // Milieux défensifs
+    [20, 40],
+    [50, 35],
+    [80, 40], // Milieux offensifs
     [50, 20], // Attaquant
   ],
   "3-4-3": [
     [50, 90], // Gardien
-    [20, 75], [50, 75], [80, 75], // Défenseurs
-    [15, 52], [40, 58], [60, 58], [85, 52], // Milieux
-    [20, 35], [50, 20], [80, 35], // Attaquants
+    [20, 75],
+    [50, 75],
+    [80, 75], // Défenseurs
+    [15, 52],
+    [40, 58],
+    [60, 58],
+    [85, 52], // Milieux
+    [20, 35],
+    [50, 20],
+    [80, 35], // Attaquants
   ],
 };
 
@@ -67,6 +101,8 @@ export default function Field({ formation, onBack }) {
   const [selectedIdx, setSelectedIdx] = useState(null);
   const positions = FORMATIONS[currentFormation];
   const [team, setTeam] = useState(Array(positions.length).fill(null));
+  const [showSavePopup, setShowSavePopup] = useState(false);
+  const [teamName, setTeamName] = useState("");
 
   useEffect(() => {
     console.log("Équipe actuelle :", team);
@@ -79,38 +115,49 @@ export default function Field({ formation, onBack }) {
     setSelectedIdx(idx); // <-- mémorise l'index
     setPopupOpen(true);
     setStep(1);
-    fetch('http://localhost:4000/football/leagues')
-      .then(res => res.json())
-      .then(data => setLeagues(data.leagues || data));
+    fetch("http://localhost:4000/football/leagues")
+      .then((res) => res.json())
+      .then((data) => setLeagues(data.leagues || data));
   };
 
   // Sélection de la ligue
   const handleLeagueSelect = (leagueId) => {
     setStep(2);
     fetch(`http://localhost:4000/football/teams?competitionId=${leagueId}`)
-      .then(res => res.json())
-      .then(data => setClubs(data.teams)); // adapte selon la structure renvoyée
+      .then((res) => res.json())
+      .then((data) => setClubs(data.teams)); // adapte selon la structure renvoyée
   };
 
   // Sélection du club
   const handleClubSelect = (clubId) => {
     const positions = mapCategoryToPositions(selectedPosition); // Convertit la catégorie en postes spécifiques
-    console.log('clubId:', clubId, 'selectedPosition:', selectedPosition, 'positions:', positions); // debug
+    console.log(
+      "clubId:",
+      clubId,
+      "selectedPosition:",
+      selectedPosition,
+      "positions:",
+      positions
+    ); // debug
     setStep(3);
-    fetch(`http://localhost:4000/football/players-by-category?teamId=${clubId}&positions=${positions.join(",")}`)
-      .then(res => res.json())
-      .then(data => {
-        console.log('Données reçues des joueurs:', data); // Inspecte la réponse
+    fetch(
+      `http://localhost:4000/football/players-by-category?teamId=${clubId}&positions=${positions.join(
+        ","
+      )}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Données reçues des joueurs:", data); // Inspecte la réponse
         setPlayers(data);
       })
-      .catch(err => {
-        console.error('Erreur fetch joueurs:', err);
+      .catch((err) => {
+        console.error("Erreur fetch joueurs:", err);
       });
   };
 
   // Sélection du joueur (à compléter selon ton besoin)
   const handlePlayerSelect = (playerId) => {
-    const selectedPlayer = players.find(p => p.id === playerId);
+    const selectedPlayer = players.find((p) => p.id === playerId);
     if (selectedPlayer && selectedIdx !== null) {
       const newTeam = [...team];
       newTeam[selectedIdx] = selectedPlayer;
@@ -134,29 +181,29 @@ export default function Field({ formation, onBack }) {
       return "Attacker";
     }
     if (formation === "4-2-3-1") {
-    if (idx === 0) return "Goalkeeper";
-    if (idx >= 1 && idx <= 4) return "Defender";
-    if (idx >= 5 && idx <= 6) return "Midfielder";
-    return "Attacker";
-  }
-  if (formation === "3-4-3") {
-    if (idx === 0) return "Goalkeeper";
-    if (idx >= 1 && idx <= 3) return "Defender";
-    if (idx >= 4 && idx <= 7) return "Midfielder";
-    return "Attacker";
-  }
-  if (formation === "4-3-3") {
-    if (idx === 0) return "Goalkeeper";
-    if (idx >= 1 && idx <= 4) return "Defender";
-    if (idx >= 5 && idx <= 7) return "Midfielder";
-    return "Attacker";
-  }
-  if (formation === "3-5-2") {
-    if (idx === 0) return "Goalkeeper";
-    if (idx >= 1 && idx <= 3) return "Defender";
-    if (idx >= 4 && idx <= 8) return "Midfielder";
-    return "Attacker";
-  }
+      if (idx === 0) return "Goalkeeper";
+      if (idx >= 1 && idx <= 4) return "Defender";
+      if (idx >= 5 && idx <= 6) return "Midfielder";
+      return "Attacker";
+    }
+    if (formation === "3-4-3") {
+      if (idx === 0) return "Goalkeeper";
+      if (idx >= 1 && idx <= 3) return "Defender";
+      if (idx >= 4 && idx <= 7) return "Midfielder";
+      return "Attacker";
+    }
+    if (formation === "4-3-3") {
+      if (idx === 0) return "Goalkeeper";
+      if (idx >= 1 && idx <= 4) return "Defender";
+      if (idx >= 5 && idx <= 7) return "Midfielder";
+      return "Attacker";
+    }
+    if (formation === "3-5-2") {
+      if (idx === 0) return "Goalkeeper";
+      if (idx >= 1 && idx <= 3) return "Defender";
+      if (idx >= 4 && idx <= 8) return "Midfielder";
+      return "Attacker";
+    }
     return "Attacker";
   }
 
@@ -165,7 +212,12 @@ export default function Field({ formation, onBack }) {
       return ["Right-Back", "Centre-Back", "Left-Back"];
     }
     if (category === "Midfielder") {
-      return ["Central Midfield", "Defensive Midfield", "Attacking Midfield", "Midfield"];
+      return [
+        "Central Midfield",
+        "Defensive Midfield",
+        "Attacking Midfield",
+        "Midfield",
+      ];
     }
     if (category === "Attacker") {
       return ["Left Winger", "Right Winger", "Centre-Forward", "Offence"];
@@ -190,7 +242,7 @@ export default function Field({ formation, onBack }) {
         </button>
         {showPopup && (
           <div className="color-popup" onMouseLeave={() => setShowPopup(false)}>
-            {COLORS.map(c => (
+            {COLORS.map((c) => (
               <button
                 key={c.name}
                 className="color-choice"
@@ -214,11 +266,16 @@ export default function Field({ formation, onBack }) {
           <span className="formation-label">{currentFormation}</span>
         </button>
         {showFormationPopup && (
-          <div className="formation-popup" onMouseLeave={() => setShowFormationPopup(false)}>
-            {FORMATION_LIST.map(f => (
+          <div
+            className="formation-popup"
+            onMouseLeave={() => setShowFormationPopup(false)}
+          >
+            {FORMATION_LIST.map((f) => (
               <button
                 key={f.name}
-                className={`formation-choice${currentFormation === f.name ? " selected" : ""}`}
+                className={`formation-choice${
+                  currentFormation === f.name ? " selected" : ""
+                }`}
                 onClick={() => {
                   setCurrentFormation(f.name);
                   setShowFormationPopup(false);
@@ -233,7 +290,7 @@ export default function Field({ formation, onBack }) {
       </div>
       <div className="field-container">
         <img src={terrain.img} alt="terrain" className="field-bg" />
-        {positions.map(([x, y], idx) => (
+        {positions.map(([x, y], idx) =>
           team[idx] ? (
             <div
               key={idx}
@@ -262,8 +319,17 @@ export default function Field({ formation, onBack }) {
               +
             </button>
           )
-        ))}
-        <button className="back-btn" onClick={onBack}>Retour</button>
+        )}
+        <button className="back-btn" onClick={onBack}>
+          Retour
+        </button>
+        <button
+          className="popup-save-btn"
+          onClick={() => setShowSavePopup(true)}
+          aria-label="Sauvegarder l'équipe"
+        >
+          Sauvegarder l’équipe
+        </button>
       </div>
 
       {/* Pop-up */}
@@ -279,13 +345,15 @@ export default function Field({ formation, onBack }) {
             onClick={() => setPopupOpen(false)}
             aria-label="Fermer"
           >
-            <span style={{fontWeight: 'bold', fontSize: '2rem'}}>&times;</span>
+            <span style={{ fontWeight: "bold", fontSize: "2rem" }}>
+              &times;
+            </span>
           </button>
           {step === 1 && (
             <div>
               <h3>Choisis une ligue</h3>
               <ul>
-                {leagues.map(league => (
+                {leagues.map((league) => (
                   <li key={league.id}>
                     <button onClick={() => handleLeagueSelect(league.id)}>
                       {league.name}
@@ -299,13 +367,20 @@ export default function Field({ formation, onBack }) {
             <div>
               <h3>Choisis un club</h3>
               <ul>
-                {clubs.map(club => (
-                  <li key={club.id} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                {clubs.map((club) => (
+                  <li
+                    key={club.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
                     {club.crest && (
                       <img
                         src={club.crest}
                         alt={club.name}
-                        style={{width: 24, height: 24, objectFit: 'contain'}}
+                        style={{ width: 24, height: 24, objectFit: "contain" }}
                       />
                     )}
                     <button onClick={() => handleClubSelect(club.id)}>
@@ -320,7 +395,7 @@ export default function Field({ formation, onBack }) {
             <div>
               <h3>Choisis un joueur</h3>
               <ul>
-                {players.map(player => (
+                {players.map((player) => (
                   <li key={player.id}>
                     <button onClick={() => handlePlayerSelect(player.id)}>
                       {player.name}
@@ -332,10 +407,68 @@ export default function Field({ formation, onBack }) {
           )}
           {/* Bouton retour */}
           {step > 1 && (
-            <button className="popup-back-btn" onClick={handlePopupBack} aria-label="Retour">
-              <span style={{fontWeight: 'bold', fontSize: '2rem'}}>&larr;</span>
-            </button>
+            <>
+              <button
+                className="popup-back-btn"
+                onClick={handlePopupBack}
+                aria-label="Retour"
+              >
+                <span style={{ fontWeight: "bold", fontSize: "2rem" }}>
+                  &larr;
+                </span>
+              </button>
+            </>
           )}
+        </div>
+      )}
+
+      {/* Pop-up sauvegarde */}
+      {showSavePopup && (
+        <div className="save-popup-overlay">
+          <div className="save-popup">
+            <h3>Nomme ton équipe</h3>
+            <input
+              type="text"
+              placeholder="Nom de l'équipe"
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
+              className="team-name-input"
+            />
+            <button
+              className="save-team-btn"
+              onClick={() => {
+                // Récupère les équipes existantes
+                const savedTeams = JSON.parse(
+                  localStorage.getItem("savedTeams") || "[]"
+                );
+                // Définit le nom par défaut si vide
+                const name =
+                  teamName.trim() || `Equipe ${savedTeams.length + 1}`;
+                // Sauvegarde
+                savedTeams.push({
+                  name,
+                  formation: currentFormation,
+                  team,
+                });
+                localStorage.setItem("savedTeams", JSON.stringify(savedTeams));
+                setShowSavePopup(false);
+                setTeamName("");
+                alert("Équipe sauvegardée !");
+              }}
+              disabled={team.includes(null)}
+            >
+              Sauvegarder
+            </button>
+            <button
+              className="save-popup-close-btn"
+              onClick={() => setShowSavePopup(false)}
+              aria-label="Fermer"
+            >
+              <span style={{ fontWeight: "bold", fontSize: "2rem" }}>
+                &times;
+              </span>
+            </button>
+          </div>
         </div>
       )}
     </div>
