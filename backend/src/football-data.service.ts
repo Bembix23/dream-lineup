@@ -46,13 +46,18 @@ export class FootballDataService {
   }
 
   async getPlayersByPositions(teamId: string, positions: string[]) {
-    const response = await axios.get(`${this.apiUrl}/teams/${teamId}`, {
-      headers: { 'X-Auth-Token': this.apiKey },
-    });
-
-    // Filtrer les joueurs par les postes spécifiés
-    return response.data.squad.filter((player: any) =>
-      positions.includes(player.position),
-    );
+    const cacheDoc = await db.collection('players').doc(teamId).get();
+    let squad: any[] = [];
+    const cacheData = cacheDoc.data();
+    if (cacheDoc.exists && cacheData && Array.isArray(cacheData.squad)) {
+      squad = cacheData.squad;
+    } else {
+      const response = await axios.get(`${this.apiUrl}/teams/${teamId}`, {
+        headers: { 'X-Auth-Token': this.apiKey },
+      });
+      squad = Array.isArray(response.data.squad) ? response.data.squad : [];
+      await db.collection('players').doc(teamId).set({ squad });
+    }
+    return squad.filter((player: any) => positions.includes(player.position));
   }
 }
