@@ -88,7 +88,7 @@ const FORMATION_LIST = [
   //{ name: "3-5-2" },
 ];
 
-export default function Field({ formation, onBack, onRequestLogin, onRequestRegister, user }) {
+export default function Field({ formation, team: initialTeam, onBack, onRequestLogin, onRequestRegister, user, readOnly }) {
   const [terrain, setTerrain] = useState(COLORS[0]);
   const [showPopup, setShowPopup] = useState(false);
   const [showFormationPopup, setShowFormationPopup] = useState(false);
@@ -101,7 +101,7 @@ export default function Field({ formation, onBack, onRequestLogin, onRequestRegi
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [selectedIdx, setSelectedIdx] = useState(null);
   const positions = FORMATIONS[currentFormation];
-  const [team, setTeam] = useState(Array(positions.length).fill(null));
+  const [team, setTeam] = useState(initialTeam || Array(positions.length).fill(null));
   const [showSavePopup, setShowSavePopup] = useState(false);
   const [teamName, setTeamName] = useState("");
   const [showAuthPopup, setShowAuthPopup] = useState(false);
@@ -262,8 +262,10 @@ export default function Field({ formation, onBack, onRequestLogin, onRequestRegi
         {/* Bouton formation */}
         <button
           className="formation-circle-btn"
-          onClick={() => setShowFormationPopup(true)}
+          onClick={!readOnly ? () => setShowFormationPopup(true) : undefined}
           aria-label="Changer la formation"
+          disabled={readOnly}
+          style={readOnly ? { opacity: 0.6, cursor: "not-allowed" } : {}}
         >
           <span className="formation-label">{currentFormation}</span>
         </button>
@@ -303,41 +305,46 @@ export default function Field({ formation, onBack, onRequestLogin, onRequestRegi
                 top: `${y}%`,
                 transform: "translate(-50%, -50%)",
                 zIndex: 2,
+                cursor: readOnly ? "default" : "pointer"
               }}
-              onClick={() => handleAddPlayerClick(idx)}
+              onClick={!readOnly ? () => handleAddPlayerClick(idx) : undefined}
             >
               {team[idx].name}
             </div>
           ) : (
-            <button
-              key={idx}
-              className="player-spot"
-              style={{
-                left: `${x}%`,
-                top: `${y}%`,
-              }}
-              onClick={() => handleAddPlayerClick(idx)}
-            >
-              +
-            </button>
+            !readOnly && (
+              <button
+                key={idx}
+                className="player-spot"
+                style={{
+                  left: `${x}%`,
+                  top: `${y}%`,
+                }}
+                onClick={() => handleAddPlayerClick(idx)}
+              >
+                +
+              </button>
+            )
           )
         )}
         <button className="back-btn" onClick={onBack}>
           Retour
         </button>
-        <button
-          className="popup-save-btn"
-          onClick={() => {
-            if (!user) {
-              setShowAuthPopup(true); // Affiche la popup d’auth
-            } else {
-              setShowSavePopup(true); // Affiche la popup de sauvegarde
-            }
-          }}
-          aria-label="Sauvegarder l'équipe"
-        >
-          Sauvegarder l’équipe
-        </button>
+        {!readOnly && (
+          <button
+            className="popup-save-btn"
+            onClick={() => {
+              if (!user) {
+                setShowAuthPopup(true); // Affiche la popup d’auth
+              } else {
+                setShowSavePopup(true); // Affiche la popup de sauvegarde
+              }
+            }}
+            aria-label="Sauvegarder l'équipe"
+          >
+            Sauvegarder l’équipe
+          </button>
+        )}
       </div>
 
       {/* Pop-up */}

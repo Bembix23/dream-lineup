@@ -6,31 +6,11 @@ import RegisterForm from './RegisterForm';
 import Account from './Account';
 import ChooseFormation from './ChooseFormation';
 import Field from './Field';
+import TeamsList from './TeamsList';
 import imgConnexion from './assets/images/icones/utilisateur-3.png';
 import imgCreerEquipe from './assets/images/icones/football-2.png';
 import imgParametres from './assets/images/icones/reglage.png';
 import './App.css';
-
-const buttonsData = [
-  {
-    id: 1,
-    label: 'Se Connecter',
-    description: 'Description du bouton 1',
-    image: imgConnexion,
-  },
-  {
-    id: 2,
-    label: 'Créer une équipe',
-    description: 'Description du bouton 2',
-    image: imgCreerEquipe,
-  },
-  {
-    id: 3,
-    label: 'Paramètres',
-    description: 'Description du bouton 3',
-    image: imgParametres,
-  },
-];
 
 function App() {
   const [user, setUser] = useState(null);
@@ -39,6 +19,40 @@ function App() {
   const [showAccount, setShowAccount] = useState(false);
   const [showFormation, setShowFormation] = useState(false);
   const [selectedFormation, setSelectedFormation] = useState(null);
+  const [showTeamsList, setShowTeamsList] = useState(false);
+  const [savedTeams, setSavedTeams] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState(null);
+
+  const buttonsData = [
+    {
+      id: 1,
+      label: 'Se Connecter',
+      description: 'Description du bouton 1',
+      image: imgConnexion,
+    },
+    {
+      id: 2,
+      label: 'Créer une équipe',
+      description: 'Description du bouton 2',
+      image: imgCreerEquipe,
+    },
+    {
+      id: 3,
+      label: 'Paramètres',
+      description: 'Description du bouton 3',
+      image: imgParametres,
+    },
+  ];
+
+  if (user) {
+    buttonsData.splice(2, 0, {
+      id: 4,
+      label: 'Mes équipes',
+      description: 'Voir toutes mes équipes sauvegardées',
+      image: imgCreerEquipe,
+    });
+  }
+
   const current = buttonsData.find(b => b.id === hoveredId) || buttonsData[0];
 
   useEffect(() => {
@@ -88,6 +102,22 @@ function App() {
               onChoose={name => setSelectedFormation(name)}
             />
           )
+        ) : showTeamsList ? (
+          selectedTeam ? (
+            <Field
+              formation={selectedTeam.formation}
+              team={selectedTeam.team}
+              user={user}
+              onBack={() => setSelectedTeam(null)}
+              readOnly={true}
+            />
+          ) : (
+            <TeamsList
+              teams={savedTeams}
+              onSelect={setSelectedTeam}
+              onBack={() => setShowTeamsList(false)}
+            />
+          )
         ) : authMode === 'choice' ? (
           <div className="button-list">
             <button onClick={() => setAuthMode('login')}>Se connecter</button>
@@ -106,6 +136,14 @@ function App() {
                     if (button.label === "Se Connecter" && !user) setAuthMode('choice');
                     if (button.label === "Se Connecter" && user) setShowAccount(true);
                     if (button.label === "Créer une équipe") setShowFormation(true);
+                    if (button.label === "Mes équipes") {
+                      setShowTeamsList(true);
+                      if (user) {
+                        fetch(`http://localhost:4000/football/teams-saved?userId=${user.uid}`)
+                          .then(res => res.json())
+                          .then(data => setSavedTeams(data));
+                      }
+                    }
                   }}
                 >
                   {user && button.label === "Se Connecter"
