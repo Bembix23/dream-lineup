@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import terrainGreen from "./assets/images/fonds/dreamlineup-field-green.png";
 import terrainBlack from "./assets/images/fonds/dreamlineup-field-black.png";
+import terrainBlueSky from "./assets/images/fonds/dreamlineup-field-bluesky.png";
+import terrainRed from "./assets/images/fonds/dreamlineup-field-red.png";
+import terrainPurple from "./assets/images/fonds/dreamlineup-field-purple.png";
 import paletteIcon from "./assets/images/icones/palette.png";
 import "./Field.css";
 import { auth } from "./firebase";
@@ -77,6 +80,9 @@ const FORMATIONS = {
 const COLORS = [
   { name: "Vert", img: terrainGreen, color: "#1a7e3c" },
   { name: "Noir", img: terrainBlack, color: "#222" },
+  { name: "Bleu Ciel", img: terrainBlueSky, color: "#00bcc1" },
+  { name: "Rouge", img: terrainRed, color: "#B50000" },
+  { name: "Violet", img: terrainPurple, color: "#6000b5" },
   // Ajoute d'autres couleurs ici si besoin
 ];
 
