@@ -9,7 +9,7 @@ import Field from './Field';
 import TeamsList from './TeamsList';
 import imgConnexion from './assets/images/icones/utilisateur-3.png';
 import imgCreerEquipe from './assets/images/icones/football-2.png';
-import imgParametres from './assets/images/icones/reglage.png';
+import imgVoirEquipe from './assets/images/icones/groupe.png';
 import './App.css';
 
 function App() {
@@ -27,20 +27,14 @@ function App() {
     {
       id: 1,
       label: 'Se Connecter',
-      description: 'Description du bouton 1',
+      description: 'En étant connecté, vous pourrez par exemple sauvegarder les équipes que vous construisez ainsi que les visualiser.',
       image: imgConnexion,
     },
     {
       id: 2,
       label: 'Créer une équipe',
-      description: 'Description du bouton 2',
+      description: "Vous pouvez créer l'équipe de vos rêves en sélectionnant les joueurs que vous préférez en Europe et dans le Monde.",
       image: imgCreerEquipe,
-    },
-    {
-      id: 3,
-      label: 'Paramètres',
-      description: 'Description du bouton 3',
-      image: imgParametres,
     },
   ];
 
@@ -48,8 +42,8 @@ function App() {
     buttonsData.splice(2, 0, {
       id: 4,
       label: 'Mes équipes',
-      description: 'Voir toutes mes équipes sauvegardées',
-      image: imgCreerEquipe,
+      description: 'Vous allez accéder à la liste des équipes que vous avez sauvegardées et vous pourrez les visualiser, les renommer ou les supprimer.',
+      image: imgVoirEquipe,
     });
   }
 

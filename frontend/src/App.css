@@ -115,6 +115,7 @@ main {
   background-color: #fff7ee9b;
   padding: 30px;
   border-radius: 15px;
+  width: 400px;
 }
 
 .logout-btn {
