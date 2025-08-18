@@ -37,4 +37,22 @@ export class FootballDataController {
   async getTeamsSaved(@Query('userId') userId: string) {
     return this.footballDataService.getTeamsSaved(userId);
   }
+
+  @Post('rename-team')
+  @UseGuards(FirebaseAuthGuard)
+  async renameTeam(@Body() body: any, @Request() req) {
+    const userId = req.user.uid;
+    const { teamId, newName } = body;
+    await this.footballDataService.renameTeam(userId, teamId, newName);
+    return { success: true };
+  }
+
+  @Post('delete-team')
+  @UseGuards(FirebaseAuthGuard)
+  async deleteTeam(@Body() body: any, @Request() req) {
+    const userId = req.user.uid;
+    const { teamId } = body;
+    await this.footballDataService.deleteTeam(userId, teamId);
+    return { success: true };
+  }
 }

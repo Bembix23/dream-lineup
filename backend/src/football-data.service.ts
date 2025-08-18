@@ -78,4 +78,22 @@ export class FootballDataService {
     const snapshot = await db.collection('users').doc(userId).collection('teams').get();
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   }
+
+  async renameTeam(userId: string, teamId: string, newName: string) {
+    await db
+      .collection('users')
+      .doc(userId)
+      .collection('teams')
+      .doc(teamId)
+      .update({ name: newName });
+  }
+
+  async deleteTeam(userId: string, teamId: string) {
+    await db
+      .collection('users')
+      .doc(userId)
+      .collection('teams')
+      .doc(teamId)
+      .delete();
+  }
 }

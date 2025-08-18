@@ -92,7 +92,14 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
   const [terrain, setTerrain] = useState(COLORS[0]);
   const [showPopup, setShowPopup] = useState(false);
   const [showFormationPopup, setShowFormationPopup] = useState(false);
-  const [currentFormation, setCurrentFormation] = useState(formation);
+  const draftTeam = JSON.parse(localStorage.getItem("draftTeam") || "null");
+  const draftFormation = localStorage.getItem("draftFormation") || formation;
+  const [currentFormation, setCurrentFormation] = useState(draftFormation);
+  const positions = FORMATIONS[currentFormation];
+  const [team, setTeam] = useState(draftTeam || initialTeam || Array(positions.length).fill(null));
+  const [showSavePopup, setShowSavePopup] = useState(false);
+  const [teamName, setTeamName] = useState("");
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [step, setStep] = useState(1); // 1: ligue, 2: club, 3: joueur
   const [leagues, setLeagues] = useState([]);
@@ -100,15 +107,15 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
   const [players, setPlayers] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [selectedIdx, setSelectedIdx] = useState(null);
-  const positions = FORMATIONS[currentFormation];
-  const [team, setTeam] = useState(initialTeam || Array(positions.length).fill(null));
-  const [showSavePopup, setShowSavePopup] = useState(false);
-  const [teamName, setTeamName] = useState("");
-  const [showAuthPopup, setShowAuthPopup] = useState(false);
 
   useEffect(() => {
     console.log("Équipe actuelle :", team);
   }, [team]);
+
+  useEffect(() => {
+    localStorage.setItem("draftTeam", JSON.stringify(team));
+    localStorage.setItem("draftFormation", currentFormation);
+  }, [team, currentFormation]);
 
   // Ouvre la pop-up et mémorise le poste du bouton "+" cliqué
   const handleAddPlayerClick = (idx) => {
@@ -327,7 +334,13 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
             )
           )
         )}
-        <button className="back-btn" onClick={onBack}>
+        <button className="back-btn" onClick={
+          () => {
+            localStorage.removeItem("draftTeam");
+            localStorage.removeItem("draftFormation");
+            onBack();
+          }
+        }>
           Retour
         </button>
         {!readOnly && (
@@ -462,7 +475,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
                     'Authorization': `Bearer ${token}` // ou user.accessToken
                   },
                   body: JSON.stringify({
-                    teamName,
+                    name: teamName,
                     formation: currentFormation,
                     team,
                   }),

@@ -60,6 +60,64 @@ function App() {
     return () => unsub();
   }, []);
 
+  useEffect(() => {
+    const page = localStorage.getItem("currentPage");
+    if (page === "login") setAuthMode("login");
+    else if (page === "register") setAuthMode("register");
+    else if (page === "account") setShowAccount(true);
+    else if (page === "chooseFormation") setShowFormation(true);
+    else if (page === "field") {
+      setShowFormation(true);
+      // Optionnel: restaurer selectedFormation depuis localStorage si tu veux
+    }
+    else if (page === "teamsList") setShowTeamsList(true);
+    else if (page === "fieldSaved") {
+      setShowTeamsList(true);
+      // Optionnel: restaurer selectedTeam depuis localStorage si tu veux
+    }
+  }, []);
+
+  useEffect(() => {
+    let page = "menu";
+    if (authMode) page = authMode;
+    else if (showAccount) page = "account";
+    else if (showFormation) page = selectedFormation ? "field" : "chooseFormation";
+    else if (showTeamsList) page = selectedTeam ? "fieldSaved" : "teamsList";
+    localStorage.setItem("currentPage", page);
+  }, [authMode, showAccount, showFormation, selectedFormation, showTeamsList, selectedTeam]);
+
+  const handleRenameTeam = async (teamId, newName) => {
+    const token = await auth.currentUser.getIdToken();
+    await fetch(`http://localhost:4000/football/rename-team`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ teamId, newName }),
+    });
+    // Recharge la liste des équipes
+    fetch(`http://localhost:4000/football/teams-saved?userId=${user.uid}`)
+      .then(res => res.json())
+      .then(data => setSavedTeams(data));
+  };
+
+  const handleDeleteTeam = async (teamId) => {
+    const token = await auth.currentUser.getIdToken();
+    await fetch(`http://localhost:4000/football/delete-team`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ teamId }),
+    });
+    // Recharge la liste des équipes
+    fetch(`http://localhost:4000/football/teams-saved?userId=${user.uid}`)
+      .then(res => res.json())
+      .then(data => setSavedTeams(data));
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -116,6 +174,8 @@ function App() {
               teams={savedTeams}
               onSelect={setSelectedTeam}
               onBack={() => setShowTeamsList(false)}
+              onRename={handleRenameTeam}
+              onDelete={handleDeleteTeam}
             />
           )
         ) : authMode === 'choice' ? (
