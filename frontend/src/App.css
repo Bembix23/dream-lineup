@@ -128,6 +128,82 @@ main {
   border-radius: 8px;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.5rem;
+}
+
+.logout-btn img {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .content {
+    padding: 2rem 1rem;
+    width: 100vw;
+    justify-content: center;
+  }
+  .button-list {
+    margin-top: 2rem;
+    align-items: center;
+  }
+  .detail {
+    display: none !important;
+  }
+  .logout-btn {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    background: #B50000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .logout-btn span {
+    display: none;
+  }
+  .logout-btn img {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+}
+
+@media (max-width: 700px) {
+  .main,
+  .content {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 1rem 0;
+    width: 100vw;
+  }
+  .button-list {
+    width: 90vw;
+    max-width: 350px;
+    margin-top: 1.5rem;
+    align-items: center;
+  }
+  .button-list button {
+    width: 100%;
+    font-size: 2rem;
+    padding: 0.7rem 0.5rem;
+  }
+  .detail {
+    width: 90vw;
+    max-width: 350px;
+  }
+  h1 {
+    font-size: 2rem !important;
+    padding: 10px 10px;
+  }
+
+  .logout-btn {
+    top: 45px
+  }
 }
 

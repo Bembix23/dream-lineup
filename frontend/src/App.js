@@ -10,6 +10,7 @@ import TeamsList from './TeamsList';
 import imgConnexion from './assets/images/icones/utilisateur-3.png';
 import imgCreerEquipe from './assets/images/icones/football-2.png';
 import imgVoirEquipe from './assets/images/icones/groupe.png';
+import imgLogout from './assets/images/icones/logout.png';
 import './App.css';
 
 function App() {
@@ -112,13 +113,18 @@ function App() {
       .then(data => setSavedTeams(data));
   };
 
+  const handleLogout = () => {
+    signOut(auth);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
         <h1>Dream Lineup</h1>
         {user && (
-          <button className="logout-btn" onClick={() => signOut(auth)}>
-            Déconnexion
+          <button className="logout-btn" onClick={handleLogout}>
+            <span>Déconnexion</span>
+            <img src={imgLogout} alt="Déconnexion" />
           </button>
         )}
       </header>
