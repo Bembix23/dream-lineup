@@ -5,6 +5,8 @@ import terrainBlueSky from "./assets/images/fonds/dreamlineup-field-bluesky.png"
 import terrainRed from "./assets/images/fonds/dreamlineup-field-red.png";
 import terrainPurple from "./assets/images/fonds/dreamlineup-field-purple.png";
 import paletteIcon from "./assets/images/icones/palette.png";
+import backArrow from './assets/images/icones/backArrow.png';
+import saveIcon from './assets/images/icones/sauvegarder.png';
 import "./Field.css";
 import { auth } from "./firebase";
 
@@ -304,6 +306,21 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
             ))}
           </div>
         )}
+        {!readOnly && (
+          <button
+            className="popup-save-btn"
+            onClick={() => {
+              if (!user) {
+                setShowAuthPopup(true); // Affiche la popup d’auth
+              } else {
+                setShowSavePopup(true); // Affiche la popup de sauvegarde
+              }
+            }}
+            aria-label="Sauvegarder l'équipe"
+          >
+            <img src={saveIcon} alt="Sauvegarder" />
+          </button>
+        )}
       </div>
       <div className="field-container">
         <img src={terrain.img} alt="terrain" className="field-bg" />
@@ -347,112 +364,100 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
             onBack();
           }
         }>
-          Retour
+          <span>Retour</span>
+          <img src={backArrow} alt="Retour" />
         </button>
-        {!readOnly && (
-          <button
-            className="popup-save-btn"
-            onClick={() => {
-              if (!user) {
-                setShowAuthPopup(true); // Affiche la popup d’auth
-              } else {
-                setShowSavePopup(true); // Affiche la popup de sauvegarde
-              }
-            }}
-            aria-label="Sauvegarder l'équipe"
-          >
-            Sauvegarder l’équipe
-          </button>
-        )}
       </div>
 
       {/* Pop-up */}
       {popupOpen && (
-        <div className="popup">
-          {selectedPosition && (
-            <div className="selected-position-info">
-              <strong>Poste choisi :</strong> {selectedPosition}
-            </div>
-          )}
-          <button
-            className="popup-close-btn"
-            onClick={() => setPopupOpen(false)}
-            aria-label="Fermer"
-          >
-            <span style={{ fontWeight: "bold", fontSize: "2rem" }}>
-              &times;
-            </span>
-          </button>
-          {step === 1 && (
-            <div>
-              <h3>Choisis une ligue</h3>
-              <ul>
-                {leagues.map((league) => (
-                  <li key={league.id}>
-                    <button onClick={() => handleLeagueSelect(league.id)}>
-                      {league.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {step === 2 && (
-            <div>
-              <h3>Choisis un club</h3>
-              <ul>
-                {clubs.map((club) => (
-                  <li
-                    key={club.id}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                  >
-                    {club.crest && (
-                      <img
-                        src={club.crest}
-                        alt={club.name}
-                        style={{ width: 24, height: 24, objectFit: "contain" }}
-                      />
-                    )}
-                    <button onClick={() => handleClubSelect(club.id)}>
-                      {club.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {step === 3 && (
-            <div>
-              <h3>Choisis un joueur</h3>
-              <ul>
-                {players.map((player) => (
-                  <li key={player.id}>
-                    <button onClick={() => handlePlayerSelect(player.id)}>
-                      {player.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {/* Bouton retour */}
-          {step > 1 && (
-            <>
-              <button
-                className="popup-back-btn"
-                onClick={handlePopupBack}
-                aria-label="Retour"
-              >
-                <span style={{ fontWeight: "bold", fontSize: "2rem" }}>
-                  &larr;
-                </span>
-              </button>
-            </>
-          )}
+        <div className="player-popup-overlay">
+          <div className="popup">
+            {selectedPosition && (
+              <div className="selected-position-info">
+                <strong>Poste choisi :</strong> {selectedPosition}
+              </div>
+            )}
+            <button
+              className="popup-close-btn"
+              onClick={() => setPopupOpen(false)}
+              aria-label="Fermer"
+            >
+              <span style={{ fontWeight: "bold", fontSize: "2rem" }}>
+                &times;
+              </span>
+            </button>
+            {step === 1 && (
+              <div>
+                <h3>Choisis une ligue</h3>
+                <ul>
+                  {leagues.map((league) => (
+                    <li key={league.id}>
+                      <button onClick={() => handleLeagueSelect(league.id)}>
+                        {league.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {step === 2 && (
+              <div>
+                <h3>Choisis un club</h3>
+                <ul>
+                  {clubs.map((club) => (
+                    <li
+                      key={club.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      {club.crest && (
+                        <img
+                          src={club.crest}
+                          alt={club.name}
+                          style={{ width: 24, height: 24, objectFit: "contain" }}
+                        />
+                      )}
+                      <button onClick={() => handleClubSelect(club.id)}>
+                        {club.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {step === 3 && (
+              <div>
+                <h3>Choisis un joueur</h3>
+                <ul>
+                  {players.map((player) => (
+                    <li key={player.id}>
+                      <button onClick={() => handlePlayerSelect(player.id)}>
+                        {player.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {/* Bouton retour */}
+            {step > 1 && (
+              <>
+                <button
+                  className="popup-back-btn"
+                  onClick={handlePopupBack}
+                  aria-label="Retour"
+                >
+                  <span style={{ fontWeight: "bold", fontSize: "2rem" }}>
+                    &larr;
+                  </span>
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
 

@@ -1,6 +1,7 @@
 import formation442 from './assets/images/icones/formation-442.png';
 import formation4231 from './assets/images/icones/formation-4231.png';
 import formation343 from './assets/images/icones/formation-343.png';
+import backArrow from './assets/images/icones/backArrow.png';
 import './ChooseFormation.css';
 
 const formations = [
@@ -21,7 +22,10 @@ export default function ChooseFormation({ onBack, onChoose }) {
           </button>
         ))}
       </div>
-      <button className="back-btn" onClick={onBack}>Retour</button>
+      <button className="back-btn" onClick={onBack}>
+        <span>Retour</span>
+        <img src={backArrow} alt="Retour" />
+      </button>
     </div>
   );
 }

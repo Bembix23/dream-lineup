@@ -8,7 +8,7 @@
 }
 
 h1 {
-    font-size: 80px !important;
+  font-size: 80px !important;
 }
 .choose-formation-page h1 {
   font-family: Jaro;
@@ -65,4 +65,84 @@ h1 {
   padding: 1rem 2rem;
   font-size: 1.5rem;
   cursor: pointer;
+}
+
+.back-btn img {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .choose-formation-page h1 {
+    font-size: 60px !important;
+  }
+
+  .formation-btn {
+    padding: 1.5rem 2rem;
+    font-size: 2rem;
+  }
+
+  .formation-btn img {
+    width: 150px;
+  }
+
+  .back-btn {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    background: #B50000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 20px;
+    left: 20px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    color: #FFF7EE;
+    font-size: 2rem;
+  }
+  .back-btn span {
+    display: none;
+  }
+  .back-btn img {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+}
+
+@media (max-width: 700px) {
+  .choose-formation-page h1 {
+    font-size: 40px !important;
+    padding: 5px 20px;
+  }
+
+  .formations-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    max-height: 50vh;
+    overflow-y: auto;
+    width: 100%;
+    margin-top: 0;
+    padding-top: 11rem;
+  }
+
+  .formation-btn {
+    width: 90%;
+    padding: 1rem;
+    font-size: 1.5rem;
+  }
+
+  .formation-btn img {
+    width: 150px;
+  }
+
+  .back-btn {
+    width: 80%;
+    font-size: 1.2rem;
+    padding: 0.8rem;
+    margin-top: 25px;
+  }
+  
 }
