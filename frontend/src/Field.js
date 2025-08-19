@@ -115,6 +115,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
   const [players, setPlayers] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [selectedIdx, setSelectedIdx] = useState(null);
+  const [playerError, setPlayerError] = useState("");
 
   useEffect(() => {
     console.log("Équipe actuelle :", team);
@@ -176,12 +177,18 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
   const handlePlayerSelect = (playerId) => {
     const selectedPlayer = players.find((p) => p.id === playerId);
     if (selectedPlayer && selectedIdx !== null) {
+      // Vérifie si le joueur est déjà dans l’équipe
+      if (team.some((p) => p && p.id === playerId)) {
+        setPlayerError("Ce joueur est déjà sélectionné dans l'équipe !");
+        return;
+      }
       const newTeam = [...team];
       newTeam[selectedIdx] = selectedPlayer;
       setTeam(newTeam);
+      setPlayerError(""); // Réinitialise l’erreur
     }
     setPopupOpen(false);
-    setSelectedIdx(null); // reset après sélection
+    setSelectedIdx(null);
   };
 
   const handlePopupBack = () => {
@@ -380,7 +387,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
             )}
             <button
               className="popup-close-btn"
-              onClick={() => setPopupOpen(false)}
+              onClick={() => { setPopupOpen(false); setPlayerError(""); }}
               aria-label="Fermer"
             >
               <span style={{ fontWeight: "bold", fontSize: "2rem" }}>
@@ -432,6 +439,11 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
             {step === 3 && (
               <div>
                 <h3>Choisis un joueur</h3>
+                {playerError && (
+                  <div style={{ color: "#B50000", marginBottom: "1rem", fontWeight: "bold" }}>
+                    {playerError}
+                  </div>
+                )}
                 <ul>
                   {players.map((player) => (
                     <li key={player.id}>
@@ -448,7 +460,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
               <>
                 <button
                   className="popup-back-btn"
-                  onClick={handlePopupBack}
+                  onClick={() => { handlePopupBack(); setPlayerError(""); }}
                   aria-label="Retour"
                 >
                   <span style={{ fontWeight: "bold", fontSize: "2rem" }}>
