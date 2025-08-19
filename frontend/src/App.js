@@ -16,7 +16,7 @@ import './App.css';
 function App() {
   const [user, setUser] = useState(null);
   const [hoveredId, setHoveredId] = useState(null);
-  const [authMode, setAuthMode] = useState(null); // null | 'choice' | 'login' | 'register'
+  const [authMode, setAuthMode] = useState(null);
   const [showAccount, setShowAccount] = useState(false);
   const [showFormation, setShowFormation] = useState(false);
   const [selectedFormation, setSelectedFormation] = useState(null);
@@ -63,12 +63,10 @@ function App() {
     else if (page === "chooseFormation") setShowFormation(true);
     else if (page === "field") {
       setShowFormation(true);
-      // Optionnel: restaurer selectedFormation depuis localStorage si tu veux
     }
     else if (page === "teamsList") setShowTeamsList(true);
     else if (page === "fieldSaved") {
       setShowTeamsList(true);
-      // Optionnel: restaurer selectedTeam depuis localStorage si tu veux
     }
   }, []);
 
@@ -91,7 +89,6 @@ function App() {
       },
       body: JSON.stringify({ teamId, newName }),
     });
-    // Recharge la liste des équipes
     fetch(`http://localhost:4000/football/teams-saved?userId=${user.uid}`)
       .then(res => res.json())
       .then(data => setSavedTeams(data));
@@ -107,7 +104,6 @@ function App() {
       },
       body: JSON.stringify({ teamId }),
     });
-    // Recharge la liste des équipes
     fetch(`http://localhost:4000/football/teams-saved?userId=${user.uid}`)
       .then(res => res.json())
       .then(data => setSavedTeams(data));

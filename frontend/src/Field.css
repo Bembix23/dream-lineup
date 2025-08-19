@@ -87,7 +87,7 @@
   border-radius: 24px;
   display: flex;
   flex-direction: column;
-  align-items: center;      /* centre horizontalement les boutons */
+  align-items: center;
   justify-content: flex-start;
   z-index: 10;
   padding: 1rem 10px;
@@ -236,7 +236,7 @@
 
 .popup {
   position: absolute;
-  left: calc(50% + 493px/2 + 32px); /* terrain centré + moitié largeur terrain + espace */
+  left: calc(50% + 493px/2 + 32px);
   top: 50%;
   transform: translateY(-50%);
   z-index: 1000;
@@ -474,6 +474,12 @@
   .field-container {
     width: 90vw;
     height: 62vh;
+  }
+
+  .player-rect{
+    font-size: 13px;
+    max-width: 110px;
+    height: 30px;
   }
 }
 
