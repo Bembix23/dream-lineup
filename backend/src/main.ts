@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(
     cors({
-      origin: 'http://localhost:3000', // Mets ici le port de ton front si besoin
+      origin: 'http://localhost:3000',
       credentials: true,
     }),
   );

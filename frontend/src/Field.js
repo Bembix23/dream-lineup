@@ -12,7 +12,6 @@ import { auth } from "./firebase";
 
 const FORMATIONS = {
   "4-4-2": [
-    // [x, y] en pourcentage du conteneur (0-100)
     [50, 90], // Gardien
     [15, 72],
     [35, 78],
@@ -52,30 +51,30 @@ const FORMATIONS = {
     [60, 30],
   ],
   "4-2-3-1": [
-    [50, 90], // Gardien
+    [50, 90],
     [15, 72],
     [35, 78],
     [65, 78],
-    [85, 72], // Défenseurs
+    [85, 72],
     [35, 60],
-    [65, 60], // Milieux défensifs
+    [65, 60],
     [20, 40],
     [50, 35],
-    [80, 40], // Milieux offensifs
-    [50, 20], // Attaquant
+    [80, 40],
+    [50, 20],
   ],
   "3-4-3": [
-    [50, 90], // Gardien
+    [50, 90],
     [20, 75],
     [50, 75],
-    [80, 75], // Défenseurs
+    [80, 75],
     [15, 52],
     [35, 58],
     [65, 58],
-    [85, 52], // Milieux
+    [85, 52],
     [20, 35],
     [50, 20],
-    [80, 35], // Attaquants
+    [80, 35],
   ],
 };
 
@@ -85,7 +84,6 @@ const COLORS = [
   { name: "Bleu Ciel", img: terrainBlueSky, color: "#00bcc1" },
   { name: "Rouge", img: terrainRed, color: "#B50000" },
   { name: "Violet", img: terrainPurple, color: "#6000b5" },
-  // Ajoute d'autres couleurs ici si besoin
 ];
 
 const FORMATION_LIST = [
@@ -109,7 +107,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
   const [teamName, setTeamName] = useState("");
   const [showAuthPopup, setShowAuthPopup] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
-  const [step, setStep] = useState(1); // 1: ligue, 2: club, 3: joueur
+  const [step, setStep] = useState(1);
   const [leagues, setLeagues] = useState([]);
   const [clubs, setClubs] = useState([]);
   const [players, setPlayers] = useState([]);
@@ -126,11 +124,10 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
     localStorage.setItem("draftFormation", currentFormation);
   }, [team, currentFormation]);
 
-  // Ouvre la pop-up et mémorise le poste du bouton "+" cliqué
   const handleAddPlayerClick = (idx) => {
     const positionLabel = getPositionLabel(currentFormation, idx);
     setSelectedPosition(positionLabel);
-    setSelectedIdx(idx); // <-- mémorise l'index
+    setSelectedIdx(idx);
     setPopupOpen(true);
     setStep(1);
     fetch("http://localhost:4000/football/leagues")
@@ -138,17 +135,15 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
       .then((data) => setLeagues(data.leagues || data));
   };
 
-  // Sélection de la ligue
   const handleLeagueSelect = (leagueId) => {
     setStep(2);
     fetch(`http://localhost:4000/football/teams?competitionId=${leagueId}`)
       .then((res) => res.json())
-      .then((data) => setClubs(data.teams)); // adapte selon la structure renvoyée
+      .then((data) => setClubs(data.teams));
   };
 
-  // Sélection du club
   const handleClubSelect = (clubId) => {
-    const positions = mapCategoryToPositions(selectedPosition); // Convertit la catégorie en postes spécifiques
+    const positions = mapCategoryToPositions(selectedPosition);
     console.log(
       "clubId:",
       clubId,
@@ -156,7 +151,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
       selectedPosition,
       "positions:",
       positions
-    ); // debug
+    );
     setStep(3);
     fetch(
       `http://localhost:4000/football/players-by-category?teamId=${clubId}&positions=${positions.join(
@@ -165,7 +160,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log("Données reçues des joueurs:", data); // Inspecte la réponse
+        console.log("Données reçues des joueurs:", data);
         setPlayers(data);
       })
       .catch((err) => {
@@ -173,11 +168,9 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
       });
   };
 
-  // Sélection du joueur (à compléter selon ton besoin)
   const handlePlayerSelect = (playerId) => {
     const selectedPlayer = players.find((p) => p.id === playerId);
     if (selectedPlayer && selectedIdx !== null) {
-      // Vérifie si le joueur est déjà dans l’équipe
       if (team.some((p) => p && p.id === playerId)) {
         setPlayerError("Ce joueur est déjà sélectionné dans l'équipe !");
         return;
@@ -185,7 +178,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
       const newTeam = [...team];
       newTeam[selectedIdx] = selectedPlayer;
       setTeam(newTeam);
-      setPlayerError(""); // Réinitialise l’erreur
+      setPlayerError("");
     }
     setPopupOpen(false);
     setSelectedIdx(null);
@@ -197,7 +190,6 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
   };
 
   function getPositionLabel(formation, idx) {
-    // Exemple pour 4-4-2
     if (formation === "4-4-2") {
       if (idx === 0) return "Goalkeeper";
       if (idx >= 1 && idx <= 4) return "Defender";
@@ -255,7 +247,6 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
   return (
     <div className="field-page">
       <div className="side-panel">
-        {/* Bouton couleur */}
         <button
           className="color-circle-btn"
           style={{ background: terrain.color }}
@@ -281,7 +272,6 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
           </div>
         )}
 
-        {/* Bouton formation */}
         <button
           className="formation-circle-btn"
           onClick={!readOnly ? () => setShowFormationPopup(true) : undefined}
@@ -318,9 +308,9 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
             className="popup-save-btn"
             onClick={() => {
               if (!user) {
-                setShowAuthPopup(true); // Affiche la popup d’auth
+                setShowAuthPopup(true);
               } else {
-                setShowSavePopup(true); // Affiche la popup de sauvegarde
+                setShowSavePopup(true);
               }
             }}
             aria-label="Sauvegarder l'équipe"
@@ -376,7 +366,6 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
         </button>
       </div>
 
-      {/* Pop-up */}
       {popupOpen && (
         <div className="player-popup-overlay">
           <div className="popup">
@@ -455,7 +444,6 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
                 </ul>
               </div>
             )}
-            {/* Bouton retour */}
             {step > 1 && (
               <>
                 <button
@@ -473,7 +461,6 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
         </div>
       )}
 
-      {/* Pop-up sauvegarde */}
       {showSavePopup && (
         <div className="save-popup-overlay">
           <div className="save-popup">
@@ -489,13 +476,12 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
             <button
               className="save-team-btn"
               onClick={async () => {
-                // Sauvegarde
                 const token = await auth.currentUser.getIdToken();
                 fetch('http://localhost:4000/football/save-team', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // ou user.accessToken
+                    'Authorization': `Bearer ${token}`
                   },
                   body: JSON.stringify({
                     name: teamName,
@@ -528,7 +514,6 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
         </div>
       )}
 
-      {/* Pop-up auth */}
       {showAuthPopup && (
         <div className="save-popup-overlay">
           <div className="save-popup">
@@ -538,7 +523,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
               className="save-team-btn"
               onClick={() => {
                 setShowAuthPopup(false);
-                onRequestLogin(); // fonction à définir pour ouvrir LoginForm
+                onRequestLogin();
               }}
             >
               Se connecter
@@ -547,7 +532,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
               className="save-team-btn"
               onClick={() => {
                 setShowAuthPopup(false);
-                onRequestRegister(); // fonction à définir pour ouvrir RegisterForm
+                onRequestRegister();
               }}
             >
               Créer un compte
