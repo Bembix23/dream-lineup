@@ -38,6 +38,8 @@
     ]
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17"
+    "@babel/preset-react": "^7.27.1",
+    "@types/cors": "^2.8.17",
+    "jest-fetch-mock": "^3.0.3"
   }
 }

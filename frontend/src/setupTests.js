@@ -3,3 +3,45 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+beforeAll(() => {
+  // Mock fetch
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      json: () =>
+        Promise.resolve({
+          leagues: [{ id: 1, name: "Ligue 1" }],
+          teams: [{ id: 1, name: "PSG" }],
+          players: [{ id: 1, name: "Mbappé" }],
+        }),
+    })
+  );
+
+  // Mock localStorage
+  const localStorageMock = (() => {
+    let store = {};
+    return {
+      getItem: (key) => store[key] || null,
+      setItem: (key, value) => (store[key] = value.toString()),
+      removeItem: (key) => delete store[key],
+      clear: () => (store = {}),
+    };
+  })();
+  Object.defineProperty(window, "localStorage", {
+    value: localStorageMock,
+  });
+
+  // Mock Image pour les icônes / terrains
+  global.Image = class {
+    constructor() {
+      setTimeout(() => {
+        if (this.onload) this.onload();
+      }, 0);
+    }
+  };
+});
+
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
