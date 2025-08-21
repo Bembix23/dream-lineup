@@ -1,70 +1,59 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import * as admin from 'firebase-admin';
-import * as serviceAccount from './firebase-service-account.json';
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-  });
-}
-
-const db = admin.firestore();
+import { getDb } from './firebase-init'; // ✅ Nouveau import
 
 @Injectable()
 export class FootballDataService {
-  private apiUrl = 'https://api.football-data.org/v4';
   private apiKey = process.env.FOOTBALL_DATA_API_KEY;
 
   async getLeagues() {
-    try {
-      const response = await axios.get(`${this.apiUrl}/competitions`, {
-        headers: { 'X-Auth-Token': this.apiKey },
-      });
-      return response.data.competitions.map((comp: any) => ({
-        id: comp.id,
-        name: comp.name,
-        area: comp.area.name,
-      }));
-    } catch (error) {
-      console.error('Erreur getLeagues:', error);
-      throw error;
-    }
+    const response = await axios.get('https://api.football-data.org/v4/competitions', {
+      headers: { 'X-Auth-Token': this.apiKey },
+    });
+    return response.data.competitions.map((comp: any) => ({
+      id: comp.id,
+      name: comp.name,
+      area: comp.area.name,
+    }));
   }
 
   async getTeams(competitionId: string) {
+    const db = getDb(); // ✅ Utiliser getDb()
     const cacheDoc = await db.collection('teams').doc(competitionId).get();
+
     if (cacheDoc.exists) {
       return cacheDoc.data();
     }
-    const response = await axios.get(
-      `${this.apiUrl}/competitions/${competitionId}/teams`,
-      {
-        headers: { 'X-Auth-Token': this.apiKey },
-      },
-    );
-    await db.collection('teams').doc(competitionId).set(response.data);
+
+    const response = await axios.get(`https://api.football-data.org/v4/competitions/${competitionId}/teams`, {
+      headers: { 'X-Auth-Token': this.apiKey },
+    });
+
+    await cacheDoc.ref.set(response.data);
     return response.data;
   }
 
   async getPlayersByPositions(teamId: string, positions: string[]) {
+    const db = getDb(); // ✅ Utiliser getDb()
     const cacheDoc = await db.collection('players').doc(teamId).get();
-    let squad: any[] = [];
-    const cacheData = cacheDoc.data();
-    if (cacheDoc.exists && cacheData && Array.isArray(cacheData.squad)) {
-      squad = cacheData.squad;
-    } else {
-      const response = await axios.get(`${this.apiUrl}/teams/${teamId}`, {
-        headers: { 'X-Auth-Token': this.apiKey },
-      });
-      squad = Array.isArray(response.data.squad) ? response.data.squad : [];
-      await db.collection('players').doc(teamId).set({ squad });
+
+    if (cacheDoc.exists) {
+      const cachedData = cacheDoc.data();
+      if (cachedData?.squad) {
+        return cachedData.squad.filter((player: any) => positions.includes(player.position));
+      }
     }
-    return squad.filter((player: any) => positions.includes(player.position));
+
+    const response = await axios.get(`https://api.football-data.org/v4/teams/${teamId}`, {
+      headers: { 'X-Auth-Token': this.apiKey },
+    });
+
+    await cacheDoc.ref.set(response.data);
+    return response.data.squad.filter((player: any) => positions.includes(player.position));
   }
 
   async saveTeam(userId: string, name: string, formation: string, team: any[]) {
-    console.log('Sauvegarde équipe pour:', userId, name, formation, team);
+    const db = getDb(); // ✅ Utiliser getDb()
     await db.collection('users').doc(userId).collection('teams').add({
       name,
       formation,
@@ -75,27 +64,18 @@ export class FootballDataService {
   }
 
   async getTeamsSaved(userId: string) {
+    const db = getDb(); // ✅ Utiliser getDb()
     const snapshot = await db.collection('users').doc(userId).collection('teams').get();
-    const teams = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log('Service returning:', teams); // Debug
-    return teams; // S'assurer que c'est bien un tableau
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   }
 
   async renameTeam(userId: string, teamId: string, newName: string) {
-    await db
-      .collection('users')
-      .doc(userId)
-      .collection('teams')
-      .doc(teamId)
-      .update({ name: newName });
+    const db = getDb(); // ✅ Utiliser getDb()
+    await db.collection('users').doc(userId).collection('teams').doc(teamId).update({ name: newName });
   }
 
   async deleteTeam(userId: string, teamId: string) {
-    await db
-      .collection('users')
-      .doc(userId)
-      .collection('teams')
-      .doc(teamId)
-      .delete();
+    const db = getDb(); // ✅ Utiliser getDb()
+    await db.collection('users').doc(userId).collection('teams').doc(teamId).delete();
   }
 }
