@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { getDb } from './firebase-init'; // ✅ Nouveau import
+import { getDb } from './firebase-init';
 
 @Injectable()
 export class FootballDataService {
@@ -18,7 +18,7 @@ export class FootballDataService {
   }
 
   async getTeams(competitionId: string) {
-    const db = getDb(); // ✅ Utiliser getDb()
+    const db = getDb();
     const cacheDoc = await db.collection('teams').doc(competitionId).get();
 
     if (cacheDoc.exists) {
@@ -34,7 +34,7 @@ export class FootballDataService {
   }
 
   async getPlayersByPositions(teamId: string, positions: string[]) {
-    const db = getDb(); // ✅ Utiliser getDb()
+    const db = getDb();
     const cacheDoc = await db.collection('players').doc(teamId).get();
 
     if (cacheDoc.exists) {
@@ -53,7 +53,7 @@ export class FootballDataService {
   }
 
   async saveTeam(userId: string, name: string, formation: string, team: any[]) {
-    const db = getDb(); // ✅ Utiliser getDb()
+    const db = getDb();
     await db.collection('users').doc(userId).collection('teams').add({
       name,
       formation,
@@ -64,18 +64,18 @@ export class FootballDataService {
   }
 
   async getTeamsSaved(userId: string) {
-    const db = getDb(); // ✅ Utiliser getDb()
+    const db = getDb();
     const snapshot = await db.collection('users').doc(userId).collection('teams').get();
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   }
 
   async renameTeam(userId: string, teamId: string, newName: string) {
-    const db = getDb(); // ✅ Utiliser getDb()
+    const db = getDb();
     await db.collection('users').doc(userId).collection('teams').doc(teamId).update({ name: newName });
   }
 
   async deleteTeam(userId: string, teamId: string) {
-    const db = getDb(); // ✅ Utiliser getDb()
+    const db = getDb();
     await db.collection('users').doc(userId).collection('teams').doc(teamId).delete();
   }
 }

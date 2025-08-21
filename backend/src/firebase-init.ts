@@ -3,7 +3,10 @@ import * as admin from 'firebase-admin';
 let db: FirebaseFirestore.Firestore | undefined;
 
 export function initFirebaseFromEnv() {
-  if (admin.apps.length) return admin;
+  if (admin.apps.length) {
+    console.log('🔄 Firebase déjà initialisé');
+    return admin;
+  }
 
   const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
   if (!serviceAccountJson) {
@@ -12,12 +15,15 @@ export function initFirebaseFromEnv() {
 
   try {
     const serviceAccount = JSON.parse(serviceAccountJson);
+    console.log('🔧 Initialisation Firebase avec project_id:', serviceAccount.project_id);
+    
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
     });
-    console.log('✅ Firebase initialisé depuis variable d\'environnement');
+    console.log('✅ Firebase Admin initialisé avec succès');
   } catch (error) {
-    throw new Error('❌ Erreur parsing FIREBASE_SERVICE_ACCOUNT_JSON: ' + error.message);
+    console.error('❌ Erreur initialisation Firebase:', error.message);
+    throw error;
   }
 
   db = admin.firestore();

@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { FootballDataService } from './football-data.service';
 import { FootballDataController } from './football-data.controller';
+import { FootballDataService } from './football-data.service';
+import { SecurityLoggerService } from './security-logger.service';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [],
   controllers: [AppController, FootballDataController],
-  providers: [AppService, FootballDataService],
+  providers: [AppService, FootballDataService, SecurityLoggerService],
 })
 export class AppModule {}

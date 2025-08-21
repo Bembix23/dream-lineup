@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { auth } from './firebase';
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import LoginForm from './LoginForm';
@@ -12,6 +12,7 @@ import imgCreerEquipe from './assets/images/icones/football-2.png';
 import imgVoirEquipe from './assets/images/icones/groupe.png';
 import imgLogout from './assets/images/icones/logout.png';
 import './App.css';
+import { apiGet, apiPost } from './api';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -80,41 +81,19 @@ function App() {
   }, [authMode, showAccount, showFormation, selectedFormation, showTeamsList, selectedTeam]);
 
   const handleRenameTeam = async (teamId, newName) => {
-    const token = await auth.currentUser.getIdToken();
-    await fetch(`http://localhost:4000/football/rename-team`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ teamId, newName }),
-    });
-    fetch(`http://localhost:4000/football/teams-saved`, {
-      headers: {
-        'Authorization': `Bearer ${await auth.currentUser.getIdToken()}`
-      }
-    })
-      .then(res => res.json())
-      .then(data => setSavedTeams(data));
+    await apiPost('http://localhost:4000/football/rename-team', { teamId, newName });
+    
+    const response = await apiGet(`http://localhost:4000/football/teams-saved`);
+    const data = await response.json();
+    setSavedTeams(data);
   };
 
   const handleDeleteTeam = async (teamId) => {
-    const token = await auth.currentUser.getIdToken();
-    await fetch(`http://localhost:4000/football/delete-team`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ teamId }),
-    });
-    fetch(`http://localhost:4000/football/teams-saved`, {
-      headers: {
-        'Authorization': `Bearer ${await auth.currentUser.getIdToken()}`
-      }
-    })
-      .then(res => res.json())
-      .then(data => setSavedTeams(data));
+    await apiPost(`http://localhost:4000/football/delete-team`, { teamId });
+    
+    const response = await apiGet(`http://localhost:4000/football/teams-saved`);
+    const data = await response.json();
+    setSavedTeams(data);
   };
 
   const handleLogout = () => {
@@ -201,18 +180,29 @@ function App() {
                     if (button.label === "Se Connecter" && user) setShowAccount(true);
                     if (button.label === "Créer une équipe") setShowFormation(true);
                     if (button.label === "Mes équipes") {
-                      setShowTeamsList(true);
                       if (user) {
+                        console.log('👤 User connecté:', user.uid);
+                        console.log('🔐 Auth state:', auth.currentUser ? 'OK' : 'NULL');
+                        
                         (async () => {
-                          const token = await auth.currentUser.getIdToken();
-                          fetch(`http://localhost:4000/football/teams-saved`, {
-                            headers: {
-                              'Authorization': `Bearer ${token}`
+                          try {
+                            if (!auth.currentUser) {
+                              console.log('❌ Utilisateur déconnecté');
+                              return;
                             }
-                          })
-                            .then(res => res.json())
-                            .then(data => setSavedTeams(data));
+                            
+                            const response = await apiGet(`http://localhost:4000/football/teams-saved`);
+                            const data = await response.json();
+                            setSavedTeams(data);
+                            setShowTeamsList(true);
+                          } catch (error) {
+                            console.error('❌ Erreur:', error);
+                            setSavedTeams([]);
+                            setShowTeamsList(true);
+                          }
                         })();
+                      } else {
+                        setShowTeamsList(true);
                       }
                     }
                   }}

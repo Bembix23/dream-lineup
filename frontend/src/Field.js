@@ -8,7 +8,7 @@ import paletteIcon from "./assets/images/icones/palette.png";
 import backArrow from './assets/images/icones/backArrow.png';
 import saveIcon from './assets/images/icones/sauvegarder.png';
 import "./Field.css";
-import { auth } from "./firebase";
+import { apiGet, apiPost } from './api';
 
 const FORMATIONS = {
   "4-4-2": [
@@ -130,14 +130,14 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
     setSelectedIdx(idx);
     setPopupOpen(true);
     setStep(1);
-    fetch("http://localhost:4000/football/leagues")
+    apiGet("http://localhost:4000/football/leagues")
       .then((res) => res.json())
       .then((data) => setLeagues(data.leagues || data));
   };
 
   const handleLeagueSelect = (leagueId) => {
     setStep(2);
-    fetch(`http://localhost:4000/football/teams?competitionId=${leagueId}`)
+    apiGet(`http://localhost:4000/football/teams?competitionId=${leagueId}`)
       .then((res) => res.json())
       .then((data) => setClubs(data.teams));
   };
@@ -153,11 +153,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
       positions
     );
     setStep(3);
-    fetch(
-      `http://localhost:4000/football/players-by-category?teamId=${clubId}&positions=${positions.join(
-        ","
-      )}`
-    )
+    apiGet(`http://localhost:4000/football/players-by-category?teamId=${clubId}&positions=${positions.join(",")}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("Données reçues des joueurs:", data);
@@ -476,26 +472,16 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
             <button
               className="save-team-btn"
               onClick={async () => {
-                const token = await auth.currentUser.getIdToken();
-                fetch('http://localhost:4000/football/save-team', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                  },
-                  body: JSON.stringify({
-                    name: teamName,
-                    formation: currentFormation,
-                    team,
-                  }),
-                })
-                  .then(res => res.json())
-                  .then(data => {
-                    console.log('Réponse backend:', data);
-                    setShowSavePopup(false);
-                    setTeamName("");
-                    alert("Équipe sauvegardée !");
-                  });
+                const response = await apiPost('http://localhost:4000/football/save-team', {
+                  name: teamName,
+                  formation: currentFormation,
+                  team,
+                });
+                const data = await response.json();
+                console.log('Réponse backend:', data);
+                setShowSavePopup(false);
+                setTeamName("");
+                alert("Équipe sauvegardée !");
               }}
               disabled={team.includes(null) || !teamName.trim()}
             >
