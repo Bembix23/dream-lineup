@@ -98,6 +98,17 @@ function App() {
 
   const handleLogout = () => {
     signOut(auth);
+
+    setAuthMode(null);
+    setShowAccount(false);
+    setShowFormation(false);
+    setSelectedFormation(null);
+    setShowTeamsList(false);
+    setSelectedTeam(null);
+    setSavedTeams([]);
+    setHoveredId(null);
+
+    localStorage.removeItem("currentPage");
   };
 
   return (
@@ -127,7 +138,10 @@ function App() {
             }}
           />
         ) : showAccount ? (
-          <Account onBack={() => { setShowAccount(false); setAuthMode(null); }} />
+          <Account 
+  onBack={() => { setShowAccount(false); setAuthMode(null); }} 
+  onLogout={handleLogout}
+/>
         ) : showFormation ? (
           selectedFormation ? (
             <Field

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { auth } from "./firebase";
 import { updateEmail, updatePassword, deleteUser } from "firebase/auth";
 import './Account.css';
@@ -32,9 +32,20 @@ export default function Account({ onLogout, onBack }) {
   const handleDeleteAccount = async () => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.")) {
       try {
-        await deleteUser(user);
-        setMessage("Compte supprimé.");
-        if (onLogout) onLogout();
+        setMessage("Compte supprimé ! Redirection en cours...");
+        
+        setTimeout(() => {
+          if (onLogout) onLogout();
+        }, 2000);
+        
+        setTimeout(async () => {
+          try {
+            await deleteUser(user);
+          } catch (err) {
+            console.error("Erreur suppression:", err);
+          }
+        }, 100);
+        
       } catch (err) {
         setMessage("Erreur : " + err.message);
       }
