@@ -87,6 +87,8 @@ Pour utiliser pleinement l'application avec sauvegarde, vous devez configurer Fi
 
 4. Renommer le fichier "firebase-key.json"
 
+5. Mettre le fichier dans le dossier Bureau/config/dream-lineup
+
   
 
 #### 5. Configuration Frontend Firebase
