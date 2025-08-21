@@ -1,9 +1,19 @@
 import React, { useState } from "react";
 import './TeamsList.css';
+import { auth } from './firebase'; // Assurez-vous d'importer auth depuis votre configuration Firebase
 
 export default function TeamsList({ teams, onSelect, onBack, onRename, onDelete }) {
   const [editingId, setEditingId] = useState(null);
   const [newName, setNewName] = useState("");
+
+  const fetchTeams = async () => {
+    const response = await fetch('/football/teams-saved', {
+      headers: {
+        'Authorization': `Bearer ${await auth.currentUser.getIdToken()}`
+      }
+    });
+    const teamsData = await response.json();
+  };
 
   return (
     <div className="teams-list">

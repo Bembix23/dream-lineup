@@ -34,8 +34,12 @@ export class FootballDataController {
   }
 
   @Get('teams-saved')
-  async getTeamsSaved(@Query('userId') userId: string) {
-    return this.footballDataService.getTeamsSaved(userId);
+  @UseGuards(FirebaseAuthGuard)
+  async getTeamsSaved(@Request() req) {
+    const userId = req.user.uid;
+    const result = await this.footballDataService.getTeamsSaved(userId);
+    console.log('Teams result:', result); // Debug temporaire
+    return result;
   }
 
   @Post('rename-team')

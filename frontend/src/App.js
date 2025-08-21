@@ -89,7 +89,11 @@ function App() {
       },
       body: JSON.stringify({ teamId, newName }),
     });
-    fetch(`http://localhost:4000/football/teams-saved?userId=${user.uid}`)
+    fetch(`http://localhost:4000/football/teams-saved`, {
+      headers: {
+        'Authorization': `Bearer ${await auth.currentUser.getIdToken()}`
+      }
+    })
       .then(res => res.json())
       .then(data => setSavedTeams(data));
   };
@@ -104,7 +108,11 @@ function App() {
       },
       body: JSON.stringify({ teamId }),
     });
-    fetch(`http://localhost:4000/football/teams-saved?userId=${user.uid}`)
+    fetch(`http://localhost:4000/football/teams-saved`, {
+      headers: {
+        'Authorization': `Bearer ${await auth.currentUser.getIdToken()}`
+      }
+    })
       .then(res => res.json())
       .then(data => setSavedTeams(data));
   };
@@ -195,9 +203,16 @@ function App() {
                     if (button.label === "Mes équipes") {
                       setShowTeamsList(true);
                       if (user) {
-                        fetch(`http://localhost:4000/football/teams-saved?userId=${user.uid}`)
-                          .then(res => res.json())
-                          .then(data => setSavedTeams(data));
+                        (async () => {
+                          const token = await auth.currentUser.getIdToken();
+                          fetch(`http://localhost:4000/football/teams-saved`, {
+                            headers: {
+                              'Authorization': `Bearer ${token}`
+                            }
+                          })
+                            .then(res => res.json())
+                            .then(data => setSavedTeams(data));
+                        })();
                       }
                     }
                   }}

@@ -76,7 +76,9 @@ export class FootballDataService {
 
   async getTeamsSaved(userId: string) {
     const snapshot = await db.collection('users').doc(userId).collection('teams').get();
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const teams = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    console.log('Service returning:', teams); // Debug
+    return teams; // S'assurer que c'est bien un tableau
   }
 
   async renameTeam(userId: string, teamId: string, newName: string) {
