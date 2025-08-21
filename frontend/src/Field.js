@@ -242,6 +242,23 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
     else if (step === 3) setStep(2);
   };
 
+  const handleSaveClick = () => {
+    if (!user) {
+      setShowAuthPopup(true);
+      return;
+    }
+
+    // 🔧 Vérifier si au moins un joueur est sélectionné
+    const hasAnyPlayer = team.some(player => player !== null);
+    
+    if (!hasAnyPlayer) {
+      alert("Ajoutez au moins un joueur avant de sauvegarder !");
+      return;
+    }
+
+    setShowSavePopup(true);
+  };
+
   function getPositionLabel(formation, idx) {
     if (formation === "4-4-2") {
       if (idx === 0) return "Goalkeeper";
@@ -359,13 +376,7 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
         {!readOnly && (
           <button
             className="popup-save-btn"
-            onClick={() => {
-              if (!user) {
-                setShowAuthPopup(true);
-              } else {
-                setShowSavePopup(true);
-              }
-            }}
+            onClick={handleSaveClick}
             aria-label="Sauvegarder l'équipe actuelle"
             title="Sauvegarder l'équipe"
           >

@@ -2,6 +2,12 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Field from "./Field";
 
+// Mock global de window.alert
+Object.defineProperty(window, 'alert', {
+  writable: true,
+  value: jest.fn(),
+});
+
 jest.mock("./firebase", () => ({
   auth: {
     currentUser: {
@@ -45,6 +51,7 @@ jest.mock("./api", () => ({
 beforeEach(() => {
   jest.clearAllMocks();
   localStorage.clear();
+  window.alert.mockClear();
 });
 
 describe("Field component", () => {
@@ -60,8 +67,12 @@ describe("Field component", () => {
     expect(screen.getByText(/Connexion requise/i)).toBeInTheDocument();
   });
 
-  test("bouton Sauvegarder -> popup Save si user", () => {
-    render(<Field formation="4-4-2" onBack={() => {}} user={{ uid: "123" }} />);
+  test("bouton Sauvegarder -> popup Save si user avec au moins un joueur", () => {
+    // 🔧 Créer une équipe avec au moins un joueur
+    const teamWithPlayer = Array(11).fill(null);
+    teamWithPlayer[0] = { id: 1, name: "Test Player" };
+    
+    render(<Field formation="4-4-2" onBack={() => {}} user={{ uid: "123" }} team={teamWithPlayer} />);
     fireEvent.click(screen.getByLabelText("Sauvegarder l'équipe actuelle"));
     expect(screen.getByText(/Nomme ton équipe/i)).toBeInTheDocument();
   });
@@ -101,5 +112,18 @@ describe("Field component", () => {
     await waitFor(() => {
       expect(screen.queryByText(/Choisis une ligue/i)).not.toBeInTheDocument();
     });
+  });
+
+  test("le bouton Sauvegarder nécessite au moins un joueur", () => {
+    render(<Field formation="4-4-2" onBack={() => {}} user={{ uid: "123" }} />);
+    
+    const saveButton = screen.getByLabelText("Sauvegarder l'équipe actuelle");
+    fireEvent.click(saveButton);
+    
+    // 🔧 Vérifier que l'alerte est affichée
+    expect(window.alert).toHaveBeenCalledWith("Ajoutez au moins un joueur avant de sauvegarder !");
+    
+    // 🔧 Vérifier que la popup ne s'ouvre pas
+    expect(screen.queryByText(/Nomme ton équipe/i)).not.toBeInTheDocument();
   });
 });
