@@ -54,9 +54,9 @@ export class FootballDataController {
       throw new Error('Équipe requise avec au moins un joueur');
     }
 
-    // Validation des joueurs
+    // Validation des joueurs (ignorer les positions vides)
     for (const player of team) {
-      if (!player.id || !player.name) {
+      if (player !== null && (!player.id || !player.name)) {
         throw new Error('Chaque joueur doit avoir un id et un nom');
       }
     }

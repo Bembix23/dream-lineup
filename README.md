@@ -279,6 +279,24 @@ cd backend
 
 ---
 
-  
+## 🎯 Choix du Référentiel d'Accessibilité
+### WCAG 2.1 - Niveau AA
+Référentiel choisi : Web Content Accessibility Guidelines (WCAG) 2.1 - Niveau AA
+
+Justifications :
+
+🌍 Standard international reconnu - Les WCAG 2.1 sont le référentiel officiel du W3C, utilisé mondialement et reconnu par les législations européenne et française.
+
+⚖️ Conformité légale - Répond aux exigences de l'article 47 de la loi du 11 février 2005 en France et du European Accessibility Act, évitant les risques juridiques.
+
+⚡ Niveau AA optimal - Équilibre parfait entre accessibilité maximale et faisabilité technique. Le niveau A est insuffisant, le niveau AAA souvent irréaliste pour une application interactive.
+
+🛠️ Compatibilité technique - Parfaitement adapté aux technologies modernes (React, JavaScript ES6+) avec des outils de test matures (axe-core, Lighthouse).
+
+⚽ Adapté au contexte - Couvre tous les besoins d'une application interactive de sport : navigation clavier pour le terrain, lecteurs d'écran pour les sélections, contrastes pour la lisibilité des formations.
+
+📊 Mesurable et testable - Critères objectifs permettant des audits automatisés et manuels fiables, avec des métriques claires de conformité.
+
+---
 
 *Développé par Jules DUPUIS - Projet sécurisé selon OWASP Top 10 2021*
