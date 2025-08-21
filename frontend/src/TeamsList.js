@@ -16,11 +16,16 @@ export default function TeamsList({ teams, onSelect, onBack, onRename, onDelete 
           <li key={team.id}>
             {editingId === team.id ? (
               <>
+                <label htmlFor={`rename-${team.id}`} className="sr-only">
+                  Nouveau nom pour {team.name}
+                </label>
                 <input
+                  id={`rename-${team.id}`}
                   type="text"
                   value={newName}
                   onChange={e => setNewName(e.target.value)}
                   placeholder="Nouveau nom"
+                  aria-label={`Nouveau nom pour l'équipe ${team.name}`}
                 />
                 <button
                   onClick={() => {
@@ -29,14 +34,23 @@ export default function TeamsList({ teams, onSelect, onBack, onRename, onDelete 
                     setNewName("");
                   }}
                   disabled={!newName.trim()}
+                  aria-label={`Valider le nouveau nom pour ${team.name}`}
                 >
                   Valider
                 </button>
-                <button onClick={() => setEditingId(null)}>Annuler</button>
+                <button 
+                  onClick={() => setEditingId(null)}
+                  aria-label={`Annuler la modification de ${team.name}`}
+                >
+                  Annuler
+                </button>
               </>
             ) : (
               <>
-                <button onClick={() => onSelect(team)}>
+                <button 
+                  onClick={() => onSelect(team)}
+                  aria-label={`Sélectionner l'équipe ${team.name}`}
+                >
                   {team.name}
                 </button>
                 <button
@@ -45,12 +59,14 @@ export default function TeamsList({ teams, onSelect, onBack, onRename, onDelete 
                     setEditingId(team.id);
                     setNewName(team.name);
                   }}
+                  aria-label={`Renommer l'équipe ${team.name}`}
                 >
                   Renommer
                 </button>
                 <button
                   className="teams-list-delete"
                   onClick={() => onDelete(team.id)}
+                  aria-label={`Supprimer l'équipe ${team.name}`}
                 >
                   Supprimer
                 </button>
@@ -59,7 +75,9 @@ export default function TeamsList({ teams, onSelect, onBack, onRename, onDelete 
           </li>
         ))}
       </ul>
-      <button className="teams-list-back" onClick={onBack}>Retour</button>
+      <button className="teams-list-back" onClick={onBack} aria-label="Retour au menu principal">
+        Retour
+      </button>
     </div>
   );
 }

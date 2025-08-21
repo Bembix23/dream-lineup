@@ -45,22 +45,27 @@ export default function Account({ onLogout, onBack }) {
     <div className="account-container">
       <h2>Mon compte</h2>
       <form onSubmit={handleEmailChange}>
-        <label>Changer l'email :</label>
+        <label htmlFor="email-change">Changer l'email :</label>
         <input
+          id="email-change"
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
+          aria-describedby={message ? "account-message" : undefined}
         />
         <button type="submit">Modifier l'email</button>
       </form>
       <form onSubmit={handlePasswordChange}>
-        <label>Nouveau mot de passe :</label>
+        <label htmlFor="password-change">Nouveau mot de passe :</label>
         <input
+          id="password-change"
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
+          minLength="6"
+          aria-describedby={message ? "account-message" : undefined}
         />
         <button type="submit">Modifier le mot de passe</button>
       </form>
@@ -68,6 +73,7 @@ export default function Account({ onLogout, onBack }) {
         className="account-logout"
         style={{ marginTop: "2rem" }}
         onClick={onBack}
+        aria-label="Retour au menu principal"
       >
         Retour au menu
       </button>
@@ -75,10 +81,11 @@ export default function Account({ onLogout, onBack }) {
         className="account-delete"
         style={{ marginTop: "1rem" }}
         onClick={handleDeleteAccount}
+        aria-label="Supprimer définitivement mon compte"
       >
         Supprimer mon compte
       </button>
-      {message && <div style={{ marginTop: "1rem", color: "#B50000" }}>{message}</div>}
+      {message && <div id="account-message" style={{ marginTop: "1rem", color: "#B50000" }} role="alert">{message}</div>}
     </div>
   );
 }

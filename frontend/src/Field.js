@@ -124,6 +124,12 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
     localStorage.setItem("draftFormation", currentFormation);
   }, [team, currentFormation]);
 
+  useEffect(() => {
+    if (!Array.isArray(leagues)) setLeagues([]);
+    if (!Array.isArray(clubs)) setClubs([]);
+    if (!Array.isArray(players)) setPlayers([]);
+  }, [leagues, clubs, players]);
+
   const handleAddPlayerClick = (idx) => {
     const positionLabel = getPositionLabel(currentFormation, idx);
     setSelectedPosition(positionLabel);
@@ -132,8 +138,18 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
     setStep(1);
     apiGet("http://localhost:4000/football/leagues")
       ?.then((res) => res.json())
-      ?.then((data) => setLeagues(data.leagues || data))
-      ?.catch(error => console.error('Erreur chargement ligues:', error));
+      ?.then((data) => {
+        console.log('Données ligues reçues:', data);
+        const leaguesArray = Array.isArray(data) ? data : 
+                            Array.isArray(data.leagues) ? data.leagues :
+                            Array.isArray(data.competitions) ? data.competitions :
+                            [];
+        setLeagues(leaguesArray);
+      })
+      ?.catch(error => {
+        console.error('Erreur chargement ligues:', error);
+        setLeagues([]); 
+      });
   };
 
   const handleLeagueSelect = (leagueId) => {
@@ -145,23 +161,63 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
 
   const handleClubSelect = (clubId) => {
     const positions = mapCategoryToPositions(selectedPosition);
-    console.log(
-      "clubId:",
-      clubId,
-      "selectedPosition:",
-      selectedPosition,
-      "positions:",
-      positions
-    );
+    console.log("🎯 Sélection club:", { clubId, selectedPosition, positions });
+    
+    if (!positions || positions.length === 0) {
+      console.error("❌ Aucune position trouvée pour:", selectedPosition);
+      setPlayerError("Position non reconnue");
+      return;
+    }
+    
     setStep(3);
-    apiGet(`http://localhost:4000/football/players-by-category?teamId=${clubId}&positions=${positions.join(",")}`)
-      .then((res) => res.json())
+    setPlayers([]); 
+    setPlayerError(""); 
+    
+    const encodedPositions = encodeURIComponent(positions.join(","));
+    const url = `http://localhost:4000/football/players-by-category?teamId=${clubId}&positions=${encodedPositions}`;
+    console.log("📡 URL API encodée:", url);
+    
+    apiGet(url)
+      .then((res) => {
+        console.log("📊 Statut réponse:", res.status);
+        if (!res.ok) {
+          throw new Error(`Erreur ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
-        console.log("Données reçues des joueurs:", data);
-        setPlayers(data);
+        console.log("📋 Données reçues:", data);
+        console.log("🔍 Structure complète des données:", data);
+        console.log("🔍 Type de data:", typeof data);
+        console.log("🔍 Est-ce un tableau?", Array.isArray(data));
+        console.log("🔍 Clés disponibles:", Object.keys(data));
+        
+        if (data.error || data.message) {
+          console.error("❌ Erreur backend:", data.error || data.message);
+          setPlayerError(data.error || data.message || "Erreur du serveur");
+          setPlayers([]);
+          return;
+        }
+        
+        const playersArray = Array.isArray(data) ? data : 
+                            Array.isArray(data.players) ? data.players :
+                            Array.isArray(data.squad) ? data.squad :
+                            [];
+        
+        console.log("👥 Joueurs trouvés:", playersArray.length);
+        
+        if (playersArray.length === 0) {
+          setPlayerError(`Aucun joueur trouvé pour le poste ${selectedPosition}`);
+        } else {
+          setPlayerError("");
+        }
+        
+        setPlayers(playersArray);
       })
       .catch((err) => {
-        console.error("Erreur fetch joueurs:", err);
+        console.error("❌ Erreur fetch joueurs:", err);
+        setPlayerError("Erreur de connexion au serveur");
+        setPlayers([]);
       });
   };
 
@@ -310,7 +366,8 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
                 setShowSavePopup(true);
               }
             }}
-            aria-label="Sauvegarder l'équipe"
+            aria-label="Sauvegarder l'équipe actuelle"
+            title="Sauvegarder l'équipe"
           >
             <img src={saveIcon} alt="Sauvegarder" />
           </button>
@@ -431,13 +488,17 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
                   </div>
                 )}
                 <ul>
-                  {players.map((player) => (
-                    <li key={player.id}>
-                      <button onClick={() => handlePlayerSelect(player.id)}>
-                        {player.name}
-                      </button>
-                    </li>
-                  ))}
+                  {Array.isArray(players) && players.length > 0 ? (
+                    players.map((player) => (
+                      <li key={player.id}>
+                        <button onClick={() => handlePlayerSelect(player.id)}>
+                          {player.name}
+                        </button>
+                      </li>
+                    ))
+                  ) : (
+                    <li>Aucun joueur trouvé pour ce poste</li>
+                  )}
                 </ul>
               </div>
             )}

@@ -1,18 +1,30 @@
-// backend/src/dto/save-team.dto.ts
-import { IsString, IsNotEmpty, IsArray, ValidateNested, IsNumber, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, IsArray, IsOptional } from 'class-validator';
 
 class PlayerDto {
-  @IsNumber()
-  id: number;
+  @IsString()
+  @IsNotEmpty()
+  id: string;
 
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   position?: string;
+
+  @IsOptional()
+  @IsString()
+  club?: string;
+
+  @IsOptional()
+  @IsString()
+  nationality?: string;
+
+  @IsOptional()
+  dateOfBirth?: string;
+
+  [key: string]: any;
 }
 
 export class SaveTeamDto {
@@ -25,7 +37,5 @@ export class SaveTeamDto {
   formation: string;
 
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => PlayerDto)
-  team: (PlayerDto | null)[];
+  team: PlayerDto[];
 }

@@ -13,7 +13,7 @@ export class FootballDataController {
   constructor(
     private readonly footballDataService: FootballDataService,
     private readonly securityLogger: SecurityLoggerService
-  ) {}
+  ) { }
 
   @Get('leagues')
   async getLeagues() {
@@ -35,15 +35,34 @@ export class FootballDataController {
 
   @Post('save-team')
   @UseGuards(FirebaseAuthGuard)
-  async saveTeam(@Request() req, @Body() saveTeamDto: SaveTeamDto) {
+  async saveTeam(@Request() req, @Body() body: any) {
+    console.log('💾 Sauvegarde équipe - Body reçu:', JSON.stringify(body, null, 2));
+
     const userId = req.user.uid;
+    const { name, formation, team } = body;
+
+    // 🛡️ Validation manuelle plus flexible
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      throw new Error('Nom d\'équipe requis');
+    }
+    
+    if (!formation || typeof formation !== 'string') {
+      throw new Error('Formation requise');
+    }
+    
+    if (!Array.isArray(team) || team.length === 0) {
+      throw new Error('Équipe requise avec au moins un joueur');
+    }
+
+    // Validation des joueurs
+    for (const player of team) {
+      if (!player.id || !player.name) {
+        throw new Error('Chaque joueur doit avoir un id et un nom');
+      }
+    }
+
     this.securityLogger.logDataAccess(userId, 'team', 'SAVE');
-    return this.footballDataService.saveTeam(
-      userId,
-      saveTeamDto.name,
-      saveTeamDto.formation,
-      saveTeamDto.team
-    );
+    return this.footballDataService.saveTeam(userId, name.trim(), formation, team);
   }
 
   @Get('teams-saved')

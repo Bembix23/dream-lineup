@@ -169,12 +169,13 @@ function App() {
           </div>
         ) : (
           <>
-            <nav className="button-list">
+            <nav className="button-list" role="navigation" aria-label="Menu principal">
               {buttonsData.map(button => (
                 <button
                   key={button.id}
                   onMouseEnter={() => setHoveredId(button.id)}
                   onMouseLeave={() => setHoveredId(null)}
+                  aria-describedby={`desc-${button.id}`}
                   onClick={() => {
                     if (button.label === "Se Connecter" && !user) setAuthMode('choice');
                     if (button.label === "Se Connecter" && user) setShowAccount(true);
@@ -213,9 +214,13 @@ function App() {
                 </button>
               ))}
             </nav>
-            <div className={`detail ${hoveredId ? 'visible' : ''}`}>
-              <img src={current.image} alt={current.label} className={current.id === 2 ? 'rotated' : ''}/>
-              <p>{current.description}</p>
+            <div className={`detail ${hoveredId ? 'visible' : ''}`} role="region" aria-live="polite">
+              <img 
+                src={current.image} 
+                alt={`Icône ${current.label}`} 
+                className={current.id === 2 ? 'rotated' : ''}
+              />
+              <p id={`desc-${current.id}`}>{current.description}</p>
             </div>
           </>
         )}

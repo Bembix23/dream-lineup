@@ -7,6 +7,11 @@ export class FootballDataService {
   private apiKey = process.env.FOOTBALL_DATA_API_KEY;
 
   async getLeagues() {
+    if (!this.apiKey) {
+      console.error('❌ Variable FOOTBALL_DATA_API_KEY non trouvée dans process.env');
+      console.log('🔍 Variables env disponibles:', Object.keys(process.env).filter(k => k.includes('FOOTBALL')));
+    }
+
     const response = await axios.get('https://api.football-data.org/v4/competitions', {
       headers: { 'X-Auth-Token': this.apiKey },
     });
