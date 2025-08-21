@@ -175,9 +175,19 @@ FOOTBALL_DATA_API_KEY=votre_api_key_ici
 
 ```bash
 
-# Si vous avez le fichier JSON, exécutez les commandes suivantes :
+# Si vous avez le fichier JSON(sur MAC), exécutez les commandes suivantes :
 
 export  FIREBASE_SERVICE_ACCOUNT_JSON="$(cat chemin/vers/votre-cle.json)"
+
+npm run start:dev
+
+```
+
+```bash
+
+# Si vous avez le fichier JSON(sur Windows), exécutez les commandes suivantes :
+
+$env:FIREBASE_SERVICE_ACCOUNT_JSON = Get-Content chemin/vers/votre-cle.json -Raw
 
 npm run start:dev
 
