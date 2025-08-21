@@ -2,7 +2,6 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import TeamsList from "./TeamsList";
 
-// Mock Firebase COMPLÈTEMENT (même structure que les autres tests)
 jest.mock("./firebase", () => ({
   auth: {
     currentUser: null,
@@ -13,7 +12,6 @@ jest.mock("./firebase", () => ({
   },
 }));
 
-// Mock fetch global (même structure que les autres)
 global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
@@ -21,12 +19,10 @@ global.fetch = jest.fn(() =>
   })
 );
 
-// Réinitialisation avant chaque test (même structure que les autres)
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-// Données de test
 const mockTeams = [
   { id: 1, name: "Équipe PSG" },
   { id: 2, name: "Équipe Barcelona" },
@@ -124,7 +120,7 @@ describe("TeamsList component", () => {
     );
     
     const deleteButtons = screen.getAllByText(/Supprimer/i);
-    fireEvent.click(deleteButtons[0]); // Premier bouton supprimer
+    fireEvent.click(deleteButtons[0]);
     expect(onDelete).toHaveBeenCalledWith(1);
   });
 
@@ -140,9 +136,8 @@ describe("TeamsList component", () => {
     );
     
     const renameButtons = screen.getAllByText(/Renommer/i);
-    fireEvent.click(renameButtons[0]); // Premier bouton renommer
+    fireEvent.click(renameButtons[0]);
     
-    // Vérifie que l'input et les boutons d'édition apparaissent
     expect(screen.getByPlaceholderText(/Nouveau nom/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Valider/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Annuler/i })).toBeInTheDocument();
@@ -181,7 +176,7 @@ describe("TeamsList component", () => {
     fireEvent.click(renameButtons[0]);
     
     const input = screen.getByPlaceholderText(/Nouveau nom/i);
-    fireEvent.change(input, { target: { value: "   " } }); // Espaces seulement
+    fireEvent.change(input, { target: { value: "   " } });
     
     expect(screen.getByRole("button", { name: /Valider/i })).toBeDisabled();
   });
@@ -207,7 +202,6 @@ describe("TeamsList component", () => {
     
     expect(onRename).toHaveBeenCalledWith(1, "Nouveau nom PSG");
     
-    // Vérifie qu'on sort du mode édition
     expect(screen.queryByPlaceholderText(/Nouveau nom/i)).not.toBeInTheDocument();
   });
 

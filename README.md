@@ -241,6 +241,8 @@ Voir [README-SECURITY.md](./README-SECURITY.md) pour le rapport complet.
 
 ### Backend
 
+Les tests de service ont été simplifiés pour éviter les conflits de mocks Firebase dans l'environnement Jest.
+
 ```bash
 
 cd backend
@@ -269,7 +271,7 @@ npm test
 
 cd backend
 
-./audit-security-fast.sh  # Audit vulnérabilités
+./audit-security.sh  # Audit vulnérabilités
 
 ./pentest-security.sh  # Tests de pénétration
 

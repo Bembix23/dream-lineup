@@ -5,7 +5,7 @@ import Field from "./Field";
 jest.mock("./firebase", () => ({
   auth: {
     currentUser: {
-      getIdToken: jest.fn(() => Promise.resolve("fake-token"))
+      getIdToken: jest.fn(() => Promise.resolve("fake-token-12345678901234567890123456789012345"))
     },
     onAuthStateChanged: jest.fn((callback) => {
       callback(null);
@@ -14,41 +14,36 @@ jest.mock("./firebase", () => ({
   },
 }));
 
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: () => Promise.resolve([]),
-  })
-);
-
-beforeEach(() => {
-  jest.clearAllMocks();
-  
-  global.fetch.mockImplementation((url) => {
+jest.mock("./api", () => ({
+  apiGet: jest.fn((url) => {
     if (url.includes("leagues")) {
       return Promise.resolve({
-        ok: true,
         json: () => Promise.resolve([{ id: 1, name: "Ligue 1" }])
       });
     }
     if (url.includes("teams")) {
       return Promise.resolve({
-        ok: true,
         json: () => Promise.resolve([{ id: 1, name: "PSG", crest: "psg-logo.png" }])
       });
     }
     if (url.includes("players")) {
       return Promise.resolve({
-        ok: true,
         json: () => Promise.resolve([{ id: 1, name: "Mbappé" }])
       });
     }
-    return Promise.resolve({ 
-      ok: true,
-      json: () => Promise.resolve([]) 
+    
+    return Promise.resolve({
+      json: () => Promise.resolve([])
     });
-  });
+  }),
+  
+  apiPost: jest.fn(() => Promise.resolve({
+    json: () => Promise.resolve({ success: true })
+  }))
+}));
 
+beforeEach(() => {
+  jest.clearAllMocks();
   localStorage.clear();
 });
 
@@ -85,10 +80,19 @@ describe("Field component", () => {
   });
 
   test("la popup joueur s'ouvre et se ferme correctement", async () => {
+    const { apiGet } = require('./api');
+    
     render(<Field formation="4-4-2" onBack={() => {}} />);
-    fireEvent.click(screen.getAllByText("+")[0]);
+    
+    const addButtons = screen.getAllByText("+");
+    fireEvent.click(addButtons[0]);
+    
+    expect(apiGet).toHaveBeenCalledWith("http://localhost:4000/football/leagues");
+    
     expect(await screen.findByText(/Choisis une ligue/i)).toBeInTheDocument();
+    
     fireEvent.click(screen.getByLabelText("Fermer"));
+    
     await waitFor(() => {
       expect(screen.queryByText(/Choisis une ligue/i)).not.toBeInTheDocument();
     });

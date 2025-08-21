@@ -5,7 +5,6 @@
 import '@testing-library/jest-dom';
 
 beforeAll(() => {
-  // Mock fetch
   global.fetch = jest.fn(() =>
     Promise.resolve({
       json: () =>
@@ -17,7 +16,6 @@ beforeAll(() => {
     })
   );
 
-  // Mock localStorage
   const localStorageMock = (() => {
     let store = {};
     return {
@@ -31,7 +29,6 @@ beforeAll(() => {
     value: localStorageMock,
   });
 
-  // Mock Image pour les icônes / terrains
   global.Image = class {
     constructor() {
       setTimeout(() => {

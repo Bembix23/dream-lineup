@@ -131,8 +131,9 @@ export default function Field({ formation, team: initialTeam, onBack, onRequestL
     setPopupOpen(true);
     setStep(1);
     apiGet("http://localhost:4000/football/leagues")
-      .then((res) => res.json())
-      .then((data) => setLeagues(data.leagues || data));
+      ?.then((res) => res.json())
+      ?.then((data) => setLeagues(data.leagues || data))
+      ?.catch(error => console.error('Erreur chargement ligues:', error));
   };
 
   const handleLeagueSelect = (leagueId) => {
