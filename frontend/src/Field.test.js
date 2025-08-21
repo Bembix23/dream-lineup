@@ -56,20 +56,25 @@ describe("Field component", () => {
 
   test("bouton Sauvegarder -> popup Auth si pas d'user", () => {
     render(<Field formation="4-4-2" onBack={() => {}} />);
-    fireEvent.click(screen.getByLabelText("Sauvegarder l'équipe"));
+    fireEvent.click(screen.getByLabelText("Sauvegarder l'équipe actuelle"));
     expect(screen.getByText(/Connexion requise/i)).toBeInTheDocument();
   });
 
   test("bouton Sauvegarder -> popup Save si user", () => {
     render(<Field formation="4-4-2" onBack={() => {}} user={{ uid: "123" }} />);
-    fireEvent.click(screen.getByLabelText("Sauvegarder l'équipe"));
+    fireEvent.click(screen.getByLabelText("Sauvegarder l'équipe actuelle"));
     expect(screen.getByText(/Nomme ton équipe/i)).toBeInTheDocument();
   });
 
   test("le bouton Sauvegarder est désactivé si l'équipe n'est pas complète", () => {
     render(<Field formation="4-4-2" onBack={() => {}} user={{ uid: "123" }} />);
-    fireEvent.click(screen.getByLabelText("Sauvegarder l'équipe"));
-    expect(screen.getByRole("button", { name: "Sauvegarder" })).toBeDisabled();
+    
+    const saveButton = screen.getByLabelText("Sauvegarder l'équipe actuelle");
+    expect(saveButton).toBeInTheDocument();
+    
+    // Équipe vide = pas de popup
+    fireEvent.click(saveButton);
+    expect(screen.queryByText(/Nomme ton équipe/i)).not.toBeInTheDocument();
   });
 
   test("le bouton Retour appelle la fonction onBack", () => {

@@ -17,7 +17,7 @@ jest.mock("./firebase", () => ({
 
 jest.mock("firebase/auth", () => ({
   updateEmail: jest.fn(),
-  updatePassword: jest.fn(),
+  updatePassword: jest.fn(() => Promise.resolve()), // 🔧 Mock avec Promise résolue
   deleteUser: jest.fn(),
 }));
 
@@ -65,18 +65,19 @@ describe("Account component", () => {
   });
 
   test("modification de mot de passe affiche un message de succès", async () => {
+    // 🔧 Mock updatePassword pour qu'il résolve
     const { updatePassword } = require("firebase/auth");
     updatePassword.mockResolvedValue();
 
     render(<Account onLogout={() => {}} onBack={() => {}} />);
     
-    const passwordInput = screen.getByRole("textbox", { name: "" });
-    // eslint-disable-next-line testing-library/no-node-access
-    const passwordInputByType = document.querySelector('input[type="password"]');
-    fireEvent.change(passwordInputByType, { target: { value: "nouveauMotDePasse123" } });
+    const passwordInput = screen.getByLabelText("Nouveau mot de passe :");
+    fireEvent.change(passwordInput, { target: { value: "nouveauMotDePasse123" } });
     
-    fireEvent.click(screen.getByText(/Modifier le mot de passe/i));
+    const submitButton = screen.getByRole("button", { name: "Modifier le mot de passe" });
+    fireEvent.click(submitButton);
     
+    // 🔧 Attendre que le message apparaisse
     await waitFor(() => {
       expect(screen.getByText(/Mot de passe modifié !/i)).toBeInTheDocument();
     });
