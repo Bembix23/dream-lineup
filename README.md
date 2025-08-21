@@ -299,4 +299,6 @@ Justifications :
 
 ---
 
+Le cahier de recettes est à retrouver dans le fichier correspondant à côté. de ce README.
+
 *Développé par Jules DUPUIS - Projet sécurisé selon OWASP Top 10 2021*
