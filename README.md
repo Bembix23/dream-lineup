@@ -59,9 +59,15 @@ Pour utiliser pleinement l'application avec sauvegarde, vous devez configurer Fi
 
 3. Activer Google Analytics (optionnel) → Créer le projet
 
-  
+#### 2. Configurer l'authentification
 
-#### 2. Configurer Firestore
+1. Dans la console Firebase → "Authentication"
+
+2. Cliquer sur "Créer"
+
+3. Sélectionner "Email/Mot de Passe" puis cocher sur la popup, valider.
+
+#### 3. Configurer Firestore
 
 1. Dans la console Firebase → "Firestore Database"
 
@@ -71,7 +77,7 @@ Pour utiliser pleinement l'application avec sauvegarde, vous devez configurer Fi
 
   
 
-#### 3. Créer un service account (Backend)
+#### 4. Créer un service account (Backend)
 
 1. Aller dans "Paramètres du projet" (⚙️) → "Comptes de service"
 
@@ -79,9 +85,11 @@ Pour utiliser pleinement l'application avec sauvegarde, vous devez configurer Fi
 
 3. Télécharger le fichier JSON
 
+4. Renommer le fichier "firebase-key.json"
+
   
 
-#### 4. Configuration Frontend Firebase
+#### 5. Configuration Frontend Firebase
 
 1. Dans "Paramètres du projet" → "Général" → "Vos applications"
 
