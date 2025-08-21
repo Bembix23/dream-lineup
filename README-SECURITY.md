@@ -225,4 +225,3 @@ curl -I http://localhost:4000/football/leagues
 ---
 
 **🛡️ Dream Lineup - Application sécurisée selon les standards OWASP**
-*Rapport généré le $(date) - Version sécurisée finale*
