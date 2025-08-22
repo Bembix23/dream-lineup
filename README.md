@@ -194,7 +194,7 @@ npm run start:dev
 
 ```
 
-  
+Attention! Après avoir exécuté cette commande, la variable fonctionne dans la session, s'il y a cloture du terminal ou de l'IDE, il faudra la refaire pour que Firebase soit opérationnel.
 
 Le backend tourne sur http://localhost:4000.
 
