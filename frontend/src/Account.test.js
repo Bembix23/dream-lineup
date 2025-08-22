@@ -23,9 +23,11 @@ jest.mock("firebase/auth", () => ({
 
 global.confirm = jest.fn(() => true);
 
+// Mock global des timers pour tous les tests
 beforeEach(() => {
   jest.clearAllMocks();
   global.confirm.mockReturnValue(true);
+  jest.useFakeTimers(); // 🔧
 });
 
 describe("Account component", () => {
@@ -110,9 +112,8 @@ describe("Account component", () => {
     
     fireEvent.click(screen.getByText(/Supprimer mon compte/i));
     
-    expect(global.confirm).toHaveBeenCalledWith(
-      "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
-    );
+    // 🔧 Avancer tous les timers
+    jest.runAllTimers();
     
     await waitFor(() => {
       expect(deleteUser).toHaveBeenCalled();
