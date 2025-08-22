@@ -133,8 +133,8 @@ Statut : VALIDÉ
 ### TS01 - Architecture Frontend
 Test : Vérification de la structure React
 Commande : npm test
-Résultat attendu : 52 tests passent
-Statut : VALIDÉ (52/52 tests OK)
+Résultat attendu : 53 tests passent
+Statut : VALIDÉ (53/53 tests OK)
 
 ### TS02 - Architecture Backend
 Test : Vérification de la structure NestJS
