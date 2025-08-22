@@ -195,7 +195,7 @@ Statut : VALIDÉ
 ## Résultats Globaux
 
 ### Couverture de Tests
-- Tests Frontend : 52/52 VALIDÉ
+- Tests Frontend : 53/53 VALIDÉ
 - Tests Backend : 17/17 VALIDÉ
 - Tests E2E : 5/5 VALIDÉ
 - Tests Sécurité : 15/15 VALIDÉ
